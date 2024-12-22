@@ -24,7 +24,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TArray<TObjectPtr<USceneMarker>> WeaponMarkers;
 
-	
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 
 public:	

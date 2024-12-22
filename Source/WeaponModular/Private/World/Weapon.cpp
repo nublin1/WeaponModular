@@ -14,6 +14,13 @@ AWeapon::AWeapon()
 	SetRootComponent(WeaponMesh);
 }
 
+void AWeapon::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	
+}
+
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
