@@ -1,0 +1,27 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "WeaponModular/Public/World/Weapon.h"
+
+#include "Helpers/SceneMarker.h"
+
+
+AWeapon::AWeapon()
+{
+	PrimaryActorTick.bCanEverTick = true;
+
+	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	SetRootComponent(WeaponMesh);
+}
+
+void AWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void AWeapon::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
