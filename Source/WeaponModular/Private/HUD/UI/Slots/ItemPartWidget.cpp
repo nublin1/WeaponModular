@@ -52,9 +52,10 @@ void UItemPartWidget::ListButtonClick()
 	if (UWeaponPartListWidget* WidgetInstance = CreateWidget<UWeaponPartListWidget>(GetWorld(), WeaponPartListWidgetClass))
 	{
 		auto Position = Cast<UCanvasPanelSlot>(this->Slot)->GetPosition();
+		//auto Position = this->GetCachedGeometry().GetAbsolutePosition();
 		auto Size =  this->GetCachedGeometry().GetLocalSize();
 
-		FVector2D ResultPosition = Position/2;
+		FVector2D ResultPosition = Position;
 		
 		WidgetInstance->AddToViewport(50);
 		WidgetInstance->SetPositionInViewport(ResultPosition);
