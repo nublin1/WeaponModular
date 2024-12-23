@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemPartIconWidget.h"
 #include "Data/WeaponPartData.h"
+#include "WeaponPartListWidget.h"
 #include "WeaponModular/Public/HUD/UI/BUIUserWidget.h"
 #include "ItemPartWidget.generated.h"
 
+class UWeaponPartListWidget;
+class UScrollBox;
 class UButton;
 class USlateBrushAsset;
 enum class EWeaponGearPartType : uint8;
@@ -25,9 +29,15 @@ class WEAPONMODULAR_API UItemPartWidget : public UBUIUserWidget
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
+	// Widgets
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UItemPartIconWidget> MainItemIconWidget;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta=(BindWidget))
 	TObjectPtr<UButton> ListButton;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UWeaponPartListWidget> WeaponPartListWidgetClass;
+
+	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneMarker> TargetMarker;
 
@@ -48,6 +58,8 @@ class WEAPONMODULAR_API UItemPartWidget : public UBUIUserWidget
 
 	UFUNCTION()
 	void GetWeaponPartsByType();
+	UFUNCTION()
+	void ListButtonClick();
 	
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
