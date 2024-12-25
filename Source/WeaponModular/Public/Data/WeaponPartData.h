@@ -25,6 +25,15 @@ struct FBaseWeaponPart
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMesh> UStaticMesh = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	bool bUseRenderTarget = false; 
+
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bUseRenderTarget"))
+	TObjectPtr<UTextureRenderTarget2D> TextureRenderTarget = nullptr;
+
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "!bUseRenderTarget"))
+	TObjectPtr<UTexture> Texture = nullptr;
 };
 
 USTRUCT()

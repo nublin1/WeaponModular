@@ -14,7 +14,7 @@ class WEAPONMODULAR_API UItemPartIconWidget : public UBUIUserWidget
 {
 	GENERATED_BODY()
 
-	public:
+public:
 
 protected:
 

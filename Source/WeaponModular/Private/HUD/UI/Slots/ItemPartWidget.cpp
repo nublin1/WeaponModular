@@ -18,18 +18,18 @@ void UItemPartWidget::NativeOnInitialized()
 	ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::UItemPartWidget::ListButtonClick);
 }
 
-void UItemPartWidget::GetWeaponPartsByType()
+TArray<FWeaponPartData> UItemPartWidget::GetWeaponPartsByType()
 {
 	TArray<FWeaponPartData> FilteredParts;
 	if (!WidgetTable) // Проверяем, что DataTable существует
 	{
 		UE_LOG(LogTemp, Warning, TEXT("WidgetTable is null!"));
-		return;
+		return FilteredParts;
 	}
 
 	TArray<FName> RowNames = WidgetTable->GetRowNames();
 	if (RowNames.Num() == 0)
-		return;
+		return FilteredParts;
 	
 	for (const FName& RowName : RowNames)
 	{
@@ -40,26 +40,46 @@ void UItemPartWidget::GetWeaponPartsByType()
 			FilteredParts.Add(*Row); 
 		}
 	}
+
+	return FilteredParts;
 }
 
 void UItemPartWidget::ListButtonClick()
+{
+	if (!LinkedWeaponPartListWidget)
+	{
+		CreateWeaponPartListWidget();
+	}
+
+	
+	
+}
+
+void UItemPartWidget::CreateWeaponPartListWidget()
 {
 	if (!WeaponPartListWidgetClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("WeaponPartListWidgetClass is null!"));
 		return;
 	}
+	
 	if (UWeaponPartListWidget* WidgetInstance = CreateWidget<UWeaponPartListWidget>(GetWorld(), WeaponPartListWidgetClass))
 	{
-		auto Position = Cast<UCanvasPanelSlot>(this->Slot)->GetPosition();
-		//auto Position = this->GetCachedGeometry().GetAbsolutePosition();
-		auto Size =  this->GetCachedGeometry().GetLocalSize();
+		//auto CurrentPosition = Cast<UCanvasPanelSlot>(this->Slot)->GetPosition();
+		FVector2D CurrentPosition = this->GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D(0, 0));
+		auto CurrentSize =  this->GetCachedGeometry().GetLocalSize();
+		FVector2D ResultPosition =  CurrentPosition + FVector2D(0, CurrentSize.Y);
 
-		FVector2D ResultPosition = Position;
-		
-		WidgetInstance->AddToViewport(50);
-		WidgetInstance->SetPositionInViewport(ResultPosition);
-		WidgetInstance-> SetDesiredSizeInViewport(FVector2D(100, 100 +50));
+		auto CountParts = GetWeaponPartsByType();
+		if (CountParts.Num() > 0)
+		{
+			WidgetInstance->AddPartsToList(CountParts);
+		}
+
+		LinkedWeaponPartListWidget = WidgetInstance;
+		WidgetInstance->AddToViewport(1);
+		WidgetInstance->SetPositionInViewport(ResultPosition, true);
+		WidgetInstance-> SetDesiredSizeInViewport(FVector2D(CurrentSize.X, CurrentSize.Y +50));
 		
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(

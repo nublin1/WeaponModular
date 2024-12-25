@@ -23,9 +23,14 @@ class WEAPONMODULAR_API UItemPartWidget : public UBUIUserWidget
 {
 	GENERATED_BODY()
 
-	public:
+public:
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
+	UFUNCTION()
+	TArray<FWeaponPartData> GetWeaponPartsByType();
 
-	protected:
+protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
@@ -36,6 +41,8 @@ class WEAPONMODULAR_API UItemPartWidget : public UBUIUserWidget
 	TObjectPtr<UButton> ListButton;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UWeaponPartListWidget> WeaponPartListWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TObjectPtr<UWeaponPartListWidget> LinkedWeaponPartListWidget;
 
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -56,10 +63,11 @@ class WEAPONMODULAR_API UItemPartWidget : public UBUIUserWidget
 	//====================================================================
 	virtual void NativeOnInitialized() override;
 
-	UFUNCTION()
-	void GetWeaponPartsByType();
+	
 	UFUNCTION()
 	void ListButtonClick();
+	UFUNCTION()
+	void CreateWeaponPartListWidget();
 	
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
