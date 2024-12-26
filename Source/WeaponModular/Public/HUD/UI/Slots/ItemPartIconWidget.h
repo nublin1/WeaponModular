@@ -6,6 +6,7 @@
 #include "HUD/UI/BUIUserWidget.h"
 #include "ItemPartIconWidget.generated.h"
 
+class UImage;
 /**
  * 
  */
@@ -15,7 +16,14 @@ class WEAPONMODULAR_API UItemPartIconWidget : public UBUIUserWidget
 	GENERATED_BODY()
 
 public:
+	UFUNCTION()
+	UImage* GetContent_Image() {return Content_Image;}
 
 protected:
-
+	//====================================================================
+	// PROPERTIES AND VARIABLES
+	//====================================================================
+	// Widgets
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BindWidget))
+	TObjectPtr<UImage> Content_Image;
 };

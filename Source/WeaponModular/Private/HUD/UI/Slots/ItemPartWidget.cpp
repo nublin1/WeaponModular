@@ -81,7 +81,7 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 		WidgetInstance->SetPositionInViewport(ResultPosition, true);
 		WidgetInstance-> SetDesiredSizeInViewport(FVector2D(CurrentSize.X, CurrentSize.Y +50));
 		
-		FTimerHandle TimerHandle;
+		/*FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(
 			TimerHandle,
 			FTimerDelegate::CreateLambda([WidgetInstance]()
@@ -94,7 +94,7 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 			}),
 			0.2f, // Задержка перед проверкой (100 мс)
 			false
-		);
+		);*/
 		
 	}
 	else

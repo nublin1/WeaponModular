@@ -34,6 +34,9 @@ struct FBaseWeaponPart
 
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "!bUseRenderTarget"))
 	TObjectPtr<UTexture> Texture = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMaterialInterface> Material = nullptr;
 };
 
 USTRUCT()
