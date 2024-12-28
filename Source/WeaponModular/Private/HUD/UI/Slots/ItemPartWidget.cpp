@@ -4,10 +4,14 @@
 #include "WeaponModular/Public/HUD/UI/Slots/ItemPartWidget.h"
 
 #include "GameplayTagsManager.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/Button.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/ScrollBox.h"
+#include "Engine/UserInterfaceSettings.h"
 #include "HUD/UI/Slots/WeaponPartListWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 void UItemPartWidget::NativeOnInitialized()
 {
@@ -65,34 +69,43 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 	
 	if (UWeaponPartListWidget* WidgetInstance = CreateWidget<UWeaponPartListWidget>(GetWorld(), WeaponPartListWidgetClass))
 	{
-		//auto CurrentPosition = Cast<UCanvasPanelSlot>(this->Slot)->GetPosition();
-		FVector2D CurrentPosition = this->GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D(0, 0));
-		auto CurrentSize =  this->GetCachedGeometry().GetLocalSize();
-		FVector2D ResultPosition =  CurrentPosition + FVector2D(0, CurrentSize.Y);
-
 		auto CountParts = GetWeaponPartsByType();
 		if (CountParts.Num() > 0)
 		{
 			WidgetInstance->AddPartsToList(CountParts);
 		}
+		
+		FVector2D RenderCurrentPosition = this->GetCachedGeometry().GetAbsolutePosition();		
+		FVector2D CurrentSize = this->GetCachedGeometry().GetLocalSize();
+				
+		FVector2D PixelPosition;
+		FVector2D ViewportPosition;
+		USlateBlueprintLibrary::AbsoluteToViewport(
+			GetWorld(),
+			RenderCurrentPosition,
+			PixelPosition, ViewportPosition);
+		//UE_LOG(LogTemp, Warning, TEXT("ViewportPosition X: %f, ViewportPosition Y: %f"), ViewportPosition.X, ViewportPosition.Y);
 
+		FVector2D FinalViewportPosition = FVector2D(ViewportPosition.X, ViewportPosition.Y + CurrentSize.Y);
+		
 		LinkedWeaponPartListWidget = WidgetInstance;
 		WidgetInstance->AddToViewport(1);
-		WidgetInstance->SetPositionInViewport(ResultPosition, true);
-		WidgetInstance-> SetDesiredSizeInViewport(FVector2D(CurrentSize.X, CurrentSize.Y +50));
-		
-		/*FTimerHandle TimerHandle;
+		WidgetInstance->SetPositionInViewport(FinalViewportPosition, false);
+		WidgetInstance->SetDesiredSizeInViewport(FVector2D(CurrentSize.X+20, CurrentSize.Y + 50));
+
+		/*// Проверка после небольшой задержки
+		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(
 			TimerHandle,
 			FTimerDelegate::CreateLambda([WidgetInstance]()
 			{
-				FVector2D ResultPosition2 = WidgetInstance->GetCachedGeometry().GetAbsolutePosition();
+				FVector2D ResultPosition2 = WidgetInstance->GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D(0, 0));
 				UE_LOG(LogTemp, Warning, TEXT("ResultPosition X: %f, ResultPosition Y: %f"), ResultPosition2.X, ResultPosition2.Y);
-				
+
 				FVector2D Size2 = WidgetInstance->GetCachedGeometry().GetAbsoluteSize();
 				UE_LOG(LogTemp, Warning, TEXT("Size2 X: %f, Size2 Y: %f"), Size2.X, Size2.Y);
 			}),
-			0.2f, // Задержка перед проверкой (100 мс)
+			0.2f, // Задержка перед проверкой
 			false
 		);*/
 		
