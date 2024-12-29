@@ -27,6 +27,10 @@ public:
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+
+	UFUNCTION()
+	void UpdateVisual();
+	
 	UFUNCTION()
 	TArray<FWeaponPartData> GetWeaponPartsByType();
 

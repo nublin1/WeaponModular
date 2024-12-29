@@ -10,16 +10,28 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/ScrollBox.h"
 #include "Engine/UserInterfaceSettings.h"
+#include "Helpers/SceneMarker.h"
 #include "HUD/UI/Slots/WeaponPartListWidget.h"
 #include "Kismet/GameplayStatics.h"
 
 void UItemPartWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-
-	GetWeaponPartsByType();
-
+	
 	ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::UItemPartWidget::ListButtonClick);
+}
+
+void UItemPartWidget::UpdateVisual()
+{
+	if (!TargetMarker)
+		return;
+	
+	auto PartRow = TargetMarker->GetWeaponPartRow();
+	if (PartRow->)
+		return;
+
+	
+	//MainItemIconWidget
 }
 
 TArray<FWeaponPartData> UItemPartWidget::GetWeaponPartsByType()
@@ -54,7 +66,10 @@ void UItemPartWidget::ListButtonClick()
 	{
 		CreateWeaponPartListWidget();
 	}
-
+	else
+	{
+		LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Visible);
+	}
 	
 	
 }

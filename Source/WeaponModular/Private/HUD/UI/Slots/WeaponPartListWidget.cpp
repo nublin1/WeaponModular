@@ -46,3 +46,10 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 		}
 	}
 }
+
+void UWeaponPartListWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	this->SetVisibility(ESlateVisibility::Collapsed);
+}

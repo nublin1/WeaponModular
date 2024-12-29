@@ -24,8 +24,13 @@ public:
 	//====================================================================
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EWeaponGearPartType WeaponMarkerType;
-	
+
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
 	USceneMarker();
+
+	FDataTableRowHandle GetWeaponPartRow() {return  WeaponPartRow;}
 
 protected:
 	//====================================================================
@@ -39,7 +44,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 	
-
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================

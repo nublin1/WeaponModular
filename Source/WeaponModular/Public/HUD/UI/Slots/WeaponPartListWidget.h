@@ -35,4 +35,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UItemPartIconWidget> ItemPartIconWidgetClass;
+
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 };
