@@ -6,13 +6,11 @@
 #include "Data/WeaponPartData.h"
 
 
-USceneMarker::USceneMarker(): WeaponMarkerType(EWeaponGearPartType::None)
+USceneMarker::USceneMarker(): WeaponMarkerType(EWeaponGearPartType::None), RetrievedWeaponPartData(nullptr)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	
 }
 
 void USceneMarker::BeginPlay()
@@ -21,15 +19,45 @@ void USceneMarker::BeginPlay()
 
 	if (!WeaponPartRow.DataTable || WeaponPartRow.RowName.IsNone())
 		return;
-	
-	const FWeaponPartData* WData = WeaponPartRow.DataTable->FindRow<FWeaponPartData>(WeaponPartRow.RowName, WeaponPartRow.RowName.ToString());
-	if (WData)
+
+	if (FWeaponPartData* WData = WeaponPartRow.DataTable->FindRow<FWeaponPartData>(
+		WeaponPartRow.RowName, WeaponPartRow.RowName.ToString()))
 	{
-		StaticMeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(), TEXT("StaticMesh"));
-		StaticMeshComponent->SetStaticMesh(WData->BaseWeaponPartData.UStaticMesh);
-		StaticMeshComponent->RegisterComponent();
+		RetrievedWeaponPartData = WData;
+		UpdateStaticMeshComponent();
+	}
+}
+
+void USceneMarker::UpdateStaticMeshComponent()
+{
+	if (RetrievedWeaponPartData)
+	{
+		if (!StaticMeshComponent)
+		{
+			StaticMeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(),
+			                                                      TEXT("StaticMesh"));
+			StaticMeshComponent->RegisterComponent();
+		}
+		
+		StaticMeshComponent->SetStaticMesh(RetrievedWeaponPartData->BaseWeaponPartData.UStaticMesh);
 		StaticMeshComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 	}
+	else
+	{
+		if (StaticMeshComponent)
+		{
+			StaticMeshComponent->DestroyComponent();
+			StaticMeshComponent = nullptr;
+		}
+	}
+}
+
+void USceneMarker::SetRetrievedWeaponPartData(FWeaponPartData* NewWeaponPartData)
+{
+	if (RetrievedWeaponPartData == NewWeaponPartData)
+		return;
+	
+	RetrievedWeaponPartData = NewWeaponPartData; 
 }
 
 void USceneMarker::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

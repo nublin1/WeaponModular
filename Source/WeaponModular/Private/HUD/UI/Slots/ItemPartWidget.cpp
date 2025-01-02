@@ -9,6 +9,8 @@
 #include "Components/Button.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/ScrollBox.h"
+#include "Components/TextBlock.h"
+#include "Components/VerticalBox.h"
 #include "Engine/UserInterfaceSettings.h"
 #include "Helpers/SceneMarker.h"
 #include "HUD/UI/Slots/WeaponPartListWidget.h"
@@ -18,20 +20,28 @@ void UItemPartWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	
-	ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::UItemPartWidget::ListButtonClick);
+	ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::ListButtonClick);
 }
 
 void UItemPartWidget::UpdateVisual()
 {
-	if (!TargetMarker)
+	if (!TargetMarkerLinked)
 		return;
 	
-	auto PartRow = TargetMarker->GetWeaponPartRow();
-	if (PartRow->)
-		return;
+	auto RetrievedWeaponPartRow = TargetMarkerLinked->GetRetrievedWeaponPartData();
+	if (!RetrievedWeaponPartRow)
+	{
+		MainItemIconWidget->GetContent_Image()->SetBrushFromTexture(nullptr);
+		MainItemIconWidget->GetContent_Image()->SetOpacity(0.2f);
+		MainItemIconWidget->GetContent_Text_Name()->SetText(FText::FromString("Empty"));
+		return;	
+	}
 
 	
-	//MainItemIconWidget
+	MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(RetrievedWeaponPartRow->BaseWeaponPartData.Material);
+	MainItemIconWidget->GetContent_Image()->SetOpacity(1.0f);
+	FText Name = FText::FromString(RetrievedWeaponPartRow->Name.ToString());
+	MainItemIconWidget->GetContent_Text_Name()->SetText(Name);
 }
 
 TArray<FWeaponPartData> UItemPartWidget::GetWeaponPartsByType()
@@ -68,10 +78,30 @@ void UItemPartWidget::ListButtonClick()
 	}
 	else
 	{
-		LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Visible);
+		if (LinkedWeaponPartListWidget->GetVisibility() == ESlateVisibility::Visible)
+		{
+			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		else
+		{
+			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		
 	}
+
+}
+
+void UItemPartWidget::PartClicked(UItemPartIconWidget* ItemPartIconWidget)
+{
+	LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Collapsed);
 	
-	
+	auto Result = LinkedWeaponPartListWidget->GetItemPartIconToWeaponPartMap().Find(ItemPartIconWidget);
+
+	TargetMarkerLinked->SetRetrievedWeaponPartData(Result);
+	TargetMarkerLinked->UpdateStaticMeshComponent();
+
+	UpdateVisual();
+		
 }
 
 void UItemPartWidget::CreateWeaponPartListWidget()
@@ -89,6 +119,16 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 		{
 			WidgetInstance->AddPartsToList(CountParts);
 		}
+
+		auto PartList = WidgetInstance->GetWeaponPartListBox();
+		for (auto Part : PartList->GetAllChildren())
+		{
+			if (auto PartWidget = Cast<UItemPartIconWidget>(Part))
+			{
+				PartWidget->OnClickedContent_Button.AddDynamic(this, &UItemPartWidget::PartClicked);
+			}
+		}
+		
 		
 		FVector2D RenderCurrentPosition = this->GetCachedGeometry().GetAbsolutePosition();		
 		FVector2D CurrentSize = this->GetCachedGeometry().GetLocalSize();
@@ -123,7 +163,6 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 			0.2f, // Задержка перед проверкой
 			false
 		);*/
-		
 	}
 	else
 	{

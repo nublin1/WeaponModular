@@ -28,7 +28,7 @@ public:
 	// FUNCTIONS
 	//====================================================================
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void UpdateVisual();
 	
 	UFUNCTION()
@@ -50,7 +50,7 @@ protected:
 
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<USceneMarker> TargetMarker;
+	TObjectPtr<USceneMarker> TargetMarkerLinked;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UDataTable> WidgetTable;
@@ -70,6 +70,8 @@ protected:
 	
 	UFUNCTION()
 	void ListButtonClick();
+	UFUNCTION()
+	void PartClicked(UItemPartIconWidget* ItemPartIconWidget);
 	UFUNCTION()
 	void CreateWeaponPartListWidget();
 	

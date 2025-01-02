@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/Image.h"
 #include "Components/SceneComponent.h"
+#include "Data/WeaponPartData.h"
 #include "Styling/SlateBrush.h"
 #include "SceneMarker.generated.h"
 
@@ -30,7 +31,15 @@ public:
 	//====================================================================
 	USceneMarker();
 
-	FDataTableRowHandle GetWeaponPartRow() {return  WeaponPartRow;}
+	UFUNCTION()
+	virtual void UpdateStaticMeshComponent();
+
+	// Getters
+	FDataTableRowHandle GetWeaponPartRow() {return WeaponPartRow;}
+	FWeaponPartData* GetRetrievedWeaponPartData() {return RetrievedWeaponPartData;}
+
+	// Setters
+	void SetRetrievedWeaponPartData(FWeaponPartData* NewWeaponPartData);
 
 protected:
 	//====================================================================
@@ -41,17 +50,16 @@ protected:
 	TObjectPtr<USlateBrushAsset> BrushTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FDataTableRowHandle WeaponPartRow;
+	FWeaponPartData* RetrievedWeaponPartData;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 	
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
-	
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-		
 };

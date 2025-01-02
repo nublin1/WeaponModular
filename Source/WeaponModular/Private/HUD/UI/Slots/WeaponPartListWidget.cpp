@@ -3,7 +3,9 @@
 
 #include "HUD/UI/Slots/WeaponPartListWidget.h"
 
+#include "Components/Button.h"
 #include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Data/WeaponPartData.h"
 #include "Components/VerticalBox.h"
 #include "HUD/UI/Slots/ItemPartIconWidget.h"
@@ -41,11 +43,18 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 			Brush.SetResourceObject(ListOfParts[i].BaseWeaponPartData.Material);
 			Brush.ImageSize = TextureSize;
 			ItemPartIconWidget->GetContent_Image()->SetBrush(Brush);
+			ItemPartIconWidget->GetContent_Image()->SetOpacity(1.0f);
+			FText Name = FText::FromString(ListOfParts[i].Name.ToString());
+			ItemPartIconWidget->GetContent_Text_Name()->SetText(Name);
+			
 			
 			WeaponPartList_VerticalBox->AddChildToVerticalBox(ItemPartIconWidget);
+			ItemPartIconToWeaponPartMap.Add(ItemPartIconWidget, ListOfParts[i]);
 		}
 	}
 }
+
+
 
 void UWeaponPartListWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {

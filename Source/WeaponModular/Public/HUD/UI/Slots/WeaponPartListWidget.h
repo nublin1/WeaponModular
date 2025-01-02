@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/WeaponPartData.h"
 #include "HUD/UI/BUIUserWidget.h"
 #include "WeaponPartListWidget.generated.h"
 
-struct FWeaponPartData;
+
 class UVerticalBox;
 class UItemPartIconWidget;
 /**
@@ -24,6 +25,10 @@ public:
 	UWeaponPartListWidget();
 
 	void AddPartsToList(TArray<FWeaponPartData> ListOfParts);
+
+	//Getters
+	UVerticalBox* GetWeaponPartListBox() {return WeaponPartList_VerticalBox;}
+	TMap<TObjectPtr<UItemPartIconWidget>, FWeaponPartData> GetItemPartIconToWeaponPartMap() {return ItemPartIconToWeaponPartMap;}
 	
 protected:
 	//====================================================================
@@ -36,8 +41,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UItemPartIconWidget> ItemPartIconWidgetClass;
 
+	// Data
+	UPROPERTY(BlueprintReadOnly)
+	TMap<TObjectPtr<UItemPartIconWidget>, FWeaponPartData> ItemPartIconToWeaponPartMap;
+
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+	
+	
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 };
