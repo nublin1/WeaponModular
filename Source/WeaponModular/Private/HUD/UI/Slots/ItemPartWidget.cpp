@@ -19,7 +19,7 @@
 void UItemPartWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	
+
 	ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::ListButtonClick);
 }
 
@@ -27,26 +27,26 @@ void UItemPartWidget::UpdateVisual()
 {
 	if (!TargetMarkerLinked)
 		return;
-	
+
 	auto RetrievedWeaponPartRow = TargetMarkerLinked->GetRetrievedWeaponPartData();
 	if (!RetrievedWeaponPartRow)
 	{
 		MainItemIconWidget->GetContent_Image()->SetBrushFromTexture(nullptr);
 		MainItemIconWidget->GetContent_Image()->SetOpacity(0.2f);
 		MainItemIconWidget->GetContent_Text_Name()->SetText(FText::FromString("Empty"));
-		return;	
+		return;
 	}
 
-	
+
 	MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(RetrievedWeaponPartRow->BaseWeaponPartData.Material);
 	MainItemIconWidget->GetContent_Image()->SetOpacity(1.0f);
 	FText Name = FText::FromString(RetrievedWeaponPartRow->Name.ToString());
 	MainItemIconWidget->GetContent_Text_Name()->SetText(Name);
 }
 
-TArray<FWeaponPartData> UItemPartWidget::GetWeaponPartsByType()
+TArray<FWeaponGearData> UItemPartWidget::GetWeaponPartsByType()
 {
-	TArray<FWeaponPartData> FilteredParts;
+	TArray<FWeaponGearData> FilteredParts;
 	if (!WidgetTable) // Проверяем, что DataTable существует
 	{
 		UE_LOG(LogTemp, Warning, TEXT("WidgetTable is null!"));
@@ -56,14 +56,14 @@ TArray<FWeaponPartData> UItemPartWidget::GetWeaponPartsByType()
 	TArray<FName> RowNames = WidgetTable->GetRowNames();
 	if (RowNames.Num() == 0)
 		return FilteredParts;
-	
+
 	for (const FName& RowName : RowNames)
 	{
-		FWeaponPartData* Row = WidgetTable->FindRow<FWeaponPartData>(RowName, TEXT(""));
+		FWeaponGearData* Row = WidgetTable->FindRow<FWeaponGearData>(RowName, TEXT(""));
 
 		if (Row && Row->BaseWeaponPartData.WeaponGearPartType == WidgetType)
 		{
-			FilteredParts.Add(*Row); 
+			FilteredParts.Add(*Row);
 		}
 	}
 
@@ -86,22 +86,19 @@ void UItemPartWidget::ListButtonClick()
 		{
 			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Visible);
 		}
-		
 	}
-
 }
 
 void UItemPartWidget::PartClicked(UItemPartIconWidget* ItemPartIconWidget)
 {
 	LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Collapsed);
-	
+
 	auto Result = LinkedWeaponPartListWidget->GetItemPartIconToWeaponPartMap().Find(ItemPartIconWidget);
 
 	TargetMarkerLinked->SetRetrievedWeaponPartData(Result);
 	TargetMarkerLinked->UpdateStaticMeshComponent();
 
 	UpdateVisual();
-		
 }
 
 void UItemPartWidget::CreateWeaponPartListWidget()
@@ -111,8 +108,9 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 		UE_LOG(LogTemp, Warning, TEXT("WeaponPartListWidgetClass is null!"));
 		return;
 	}
-	
-	if (UWeaponPartListWidget* WidgetInstance = CreateWidget<UWeaponPartListWidget>(GetWorld(), WeaponPartListWidgetClass))
+
+	if (UWeaponPartListWidget* WidgetInstance = CreateWidget<UWeaponPartListWidget>(
+		GetWorld(), WeaponPartListWidgetClass))
 	{
 		auto CountParts = GetWeaponPartsByType();
 		if (CountParts.Num() > 0)
@@ -128,25 +126,30 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 				PartWidget->OnClickedContent_Button.AddDynamic(this, &UItemPartWidget::PartClicked);
 			}
 		}
-		
-		
-		FVector2D RenderCurrentPosition = this->GetCachedGeometry().GetAbsolutePosition();		
-		FVector2D CurrentSize = this->GetCachedGeometry().GetLocalSize();
-				
+
+		FVector2D RenderCurrentPosition = this->GetCachedGeometry().GetAbsolutePosition();
+		FVector2D CurrentSize = this->GetCachedGeometry().GetAbsoluteSize();
+		FVector2D LocalSize = this->GetCachedGeometry().GetLocalSize();
+		float Scale = this->GetCachedGeometry().GetAccumulatedLayoutTransform().GetScale();
+		FVector2D ModPosition = FVector2D(RenderCurrentPosition.X, RenderCurrentPosition.Y + CurrentSize.Y);
+
 		FVector2D PixelPosition;
 		FVector2D ViewportPosition;
 		USlateBlueprintLibrary::AbsoluteToViewport(
 			GetWorld(),
-			RenderCurrentPosition,
+			ModPosition,
 			PixelPosition, ViewportPosition);
 		//UE_LOG(LogTemp, Warning, TEXT("ViewportPosition X: %f, ViewportPosition Y: %f"), ViewportPosition.X, ViewportPosition.Y);
 
-		FVector2D FinalViewportPosition = FVector2D(ViewportPosition.X, ViewportPosition.Y + CurrentSize.Y);
-		
+		FVector2D FinalViewportPosition = ViewportPosition;
+
 		LinkedWeaponPartListWidget = WidgetInstance;
 		WidgetInstance->AddToViewport(1);
 		WidgetInstance->SetPositionInViewport(FinalViewportPosition, false);
-		WidgetInstance->SetDesiredSizeInViewport(FVector2D(CurrentSize.X+20, CurrentSize.Y + 50));
+		WidgetInstance->SetDesiredSizeInViewport(FVector2D(
+			(CurrentSize.X + 20),
+			(CountParts.Num() > 0? CurrentSize.Y + 50 : CurrentSize.Y ) 
+		));
 
 		/*// Проверка после небольшой задержки
 		FTimerHandle TimerHandle;

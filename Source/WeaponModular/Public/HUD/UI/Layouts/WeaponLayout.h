@@ -26,7 +26,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> MainCanvasPanel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<TObjectPtr<UInventoryItemSlotWidget>> UItemsWidgets;
+	TArray<TObjectPtr<UInventoryItemSlotWidget>> UInventoryItemSlotsWidgets;
+
+	
 
 	//====================================================================
 	// FUNCTIONS

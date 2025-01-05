@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "Components/Image.h"
 #include "Components/SceneComponent.h"
-#include "Data/WeaponPartData.h"
+#include "Data/WeaponGearData.h"
 #include "Styling/SlateBrush.h"
 #include "SceneMarker.generated.h"
 
-enum class EWeaponGearPartType : uint8;
+enum class EWeaponGearPartSlot : uint8;
 class UImage;
 
 
@@ -24,7 +24,7 @@ public:
 	// PROPERTIES AND VARIABLES
 	//====================================================================
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EWeaponGearPartType WeaponMarkerType;
+	EWeaponGearPartSlot WeaponMarkerType;
 
 	//====================================================================
 	// FUNCTIONS
@@ -36,10 +36,10 @@ public:
 
 	// Getters
 	FDataTableRowHandle GetWeaponPartRow() {return WeaponPartRow;}
-	FWeaponPartData* GetRetrievedWeaponPartData() {return RetrievedWeaponPartData;}
+	FWeaponGearData* GetRetrievedWeaponPartData() {return RetrievedWeaponPartData;}
 
 	// Setters
-	void SetRetrievedWeaponPartData(FWeaponPartData* NewWeaponPartData);
+	void SetRetrievedWeaponPartData(FWeaponGearData* NewWeaponPartData);
 
 protected:
 	//====================================================================
@@ -50,7 +50,7 @@ protected:
 	TObjectPtr<USlateBrushAsset> BrushTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FDataTableRowHandle WeaponPartRow;
-	FWeaponPartData* RetrievedWeaponPartData;
+	FWeaponGearData* RetrievedWeaponPartData;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;

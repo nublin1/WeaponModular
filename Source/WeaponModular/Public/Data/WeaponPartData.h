@@ -1,39 +1,30 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-#include "Engine/StaticMesh.h" 
+#include "Engine/StaticMesh.h"
 #include "WeaponPartData.generated.h"
 
 UENUM(Blueprintable)
-enum class EWeaponGearPartType : uint8
+enum class EWeaponPartSlot : uint8
 {
 	None			UMETA(DisplayName = "None"),
 	Barrel			UMETA(DisplayName = "Barrel"),
-	Magazine		UMETA(DisplayName = "Magazine"),
-	Butt			UMETA(DisplayName = "Butt"),
-	Scope			UMETA(DisplayName = "Scope"),
+	Gunstock		UMETA(DisplayName = "Gunstock"),
 };
 
 USTRUCT(BlueprintType)
-struct FBaseWeaponPart
+struct FWeaponPart
 {
 	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EWeaponGearPartType WeaponGearPartType;
+	EWeaponPartSlot WeaponPartType = EWeaponPartSlot::None;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMesh> UStaticMesh = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	bool bUseRenderTarget = false; 
-
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bUseRenderTarget"))
-	TObjectPtr<UTextureRenderTarget2D> TextureRenderTarget = nullptr;
-
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "!bUseRenderTarget"))
-	TObjectPtr<UTexture> Texture = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UMaterialInterface> Material = nullptr;
@@ -48,5 +39,5 @@ struct WEAPONMODULAR_API FWeaponPartData : public FTableRowBase
 	FName Name;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FBaseWeaponPart BaseWeaponPartData;
+	FWeaponPart BaseWeaponPartData;
 };

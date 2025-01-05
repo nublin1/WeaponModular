@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ItemPartIconWidget.h"
-#include "Data/WeaponPartData.h"
+#include "Data/WeaponGearData.h"
 #include "WeaponPartListWidget.h"
 #include "WeaponModular/Public/HUD/UI/BUIUserWidget.h"
 #include "ItemPartWidget.generated.h"
@@ -13,7 +13,7 @@ class UWeaponPartListWidget;
 class UScrollBox;
 class UButton;
 class USlateBrushAsset;
-enum class EWeaponGearPartType : uint8;
+enum class EWeaponGearPartSlot : uint8;
 class USceneMarker;
 /**
  * 
@@ -32,7 +32,7 @@ public:
 	void UpdateVisual();
 	
 	UFUNCTION()
-	TArray<FWeaponPartData> GetWeaponPartsByType();
+	TArray<FWeaponGearData> GetWeaponPartsByType();
 
 protected:
 	//====================================================================
@@ -55,12 +55,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UDataTable> WidgetTable;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EWeaponGearPartType WidgetType;
+	EWeaponGearPartSlot WidgetType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USlateBrushAsset> BrushTexture;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector2D PointToDraw;
+	FVector2D BrushTargetPoint;
 
 	//====================================================================
 	// FUNCTIONS

@@ -16,14 +16,11 @@ void UWeaponLayout::NativeConstruct()
 	TFunction<void(UWidget*, TArray<UInventoryItemSlotWidget*>&)> GatherChildWidgets = [&GatherChildWidgets](UWidget* ParentWidget, TArray<UInventoryItemSlotWidget*>& OutWidgets)
 	{
 		if (!ParentWidget) return;
-
-		// Проверяем, является ли текущий виджет UInventoryItemSlotWidget
 		if (UInventoryItemSlotWidget* ItemPartWidget = Cast<UInventoryItemSlotWidget>(ParentWidget))
 		{
 			OutWidgets.Add(ItemPartWidget);
 		}
-        
-		// Если это панель, обходим всех её детей
+		
 		if (UPanelWidget* Panel = Cast<UPanelWidget>(ParentWidget))
 		{
 			for (int32 i = 0; i < Panel->GetChildrenCount(); ++i)
@@ -39,5 +36,5 @@ void UWeaponLayout::NativeConstruct()
 	}
 
 	if (ItemPartWidgets.Num()>0)
-		UItemsWidgets = ItemPartWidgets;
+		UInventoryItemSlotsWidgets = ItemPartWidgets;
 }

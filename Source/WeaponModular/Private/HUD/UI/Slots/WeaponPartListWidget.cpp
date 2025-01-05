@@ -6,7 +6,7 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "Data/WeaponPartData.h"
+#include "Data/WeaponGearData.h"
 #include "Components/VerticalBox.h"
 #include "HUD/UI/Slots/ItemPartIconWidget.h"
 
@@ -17,7 +17,7 @@ UWeaponPartListWidget::UWeaponPartListWidget()
 	
 }
 
-void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
+void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponGearData> ListOfParts)
 {
 	if (ListOfParts.Num() == 0)
 		return;

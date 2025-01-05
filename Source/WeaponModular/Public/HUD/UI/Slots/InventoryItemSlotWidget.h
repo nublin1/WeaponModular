@@ -7,6 +7,7 @@
 #include "Utilities/UtilitiesRender.h"
 #include "InventoryItemSlotWidget.generated.h"
 
+class ULineDrawerWidget;
 class UImage;
 class UUtilitiesRender;
 class UCanvasPanel;
@@ -37,17 +38,20 @@ protected:
 	TObjectPtr<UCanvasPanel> MainCanvas;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UImage> RT_Image;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
+	TObjectPtr<ULineDrawerWidget> WBP_LineDrawer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
 	TArray<TObjectPtr<UItemPartWidget>> PartWidgets;
 
-	//
+	// Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneCaptureComponent2D> CaptureComponent;
 	UPROPERTY()
 	bool bIsDragging = false;
 	UPROPERTY()
 	FVector2D LastMousePosition;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FVector2D> BoxesToDraw;
 	
 
 	//====================================================================

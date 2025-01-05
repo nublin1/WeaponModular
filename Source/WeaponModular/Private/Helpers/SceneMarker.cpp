@@ -3,10 +3,10 @@
 
 #include "WeaponModular/Public/Helpers/SceneMarker.h"
 
-#include "Data/WeaponPartData.h"
+#include "Data/WeaponGearData.h"
 
 
-USceneMarker::USceneMarker(): WeaponMarkerType(EWeaponGearPartType::None), RetrievedWeaponPartData(nullptr)
+USceneMarker::USceneMarker(): WeaponMarkerType(EWeaponGearPartSlot::None), RetrievedWeaponPartData(nullptr)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -20,7 +20,7 @@ void USceneMarker::BeginPlay()
 	if (!WeaponPartRow.DataTable || WeaponPartRow.RowName.IsNone())
 		return;
 
-	if (FWeaponPartData* WData = WeaponPartRow.DataTable->FindRow<FWeaponPartData>(
+	if (FWeaponGearData* WData = WeaponPartRow.DataTable->FindRow<FWeaponGearData>(
 		WeaponPartRow.RowName, WeaponPartRow.RowName.ToString()))
 	{
 		RetrievedWeaponPartData = WData;
@@ -52,7 +52,7 @@ void USceneMarker::UpdateStaticMeshComponent()
 	}
 }
 
-void USceneMarker::SetRetrievedWeaponPartData(FWeaponPartData* NewWeaponPartData)
+void USceneMarker::SetRetrievedWeaponPartData(FWeaponGearData* NewWeaponPartData)
 {
 	if (RetrievedWeaponPartData == NewWeaponPartData)
 		return;

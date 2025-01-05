@@ -23,13 +23,17 @@ public:
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+	ULineDrawerWidget();
+	
+	UFUNCTION(BlueprintCallable)
+	bool AddLineToDraw(FString LineName, FVector2D StartPoint, FVector2D EndPoint);
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	UPROPERTY()
-	TArray<FVector4> LineDrawers;
+	UPROPERTY(BlueprintReadWrite)
+	TMap<FString, FVector4> LineDrawers;
 
 	//====================================================================
 	// FUNCTIONS
