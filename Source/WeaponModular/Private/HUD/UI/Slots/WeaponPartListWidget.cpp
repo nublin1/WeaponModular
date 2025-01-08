@@ -6,7 +6,7 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "Data/WeaponGearData.h"
+#include "Data/WeaponPartData.h"
 #include "Components/VerticalBox.h"
 #include "HUD/UI/Slots/ItemPartIconWidget.h"
 
@@ -17,7 +17,7 @@ UWeaponPartListWidget::UWeaponPartListWidget()
 	
 }
 
-void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponGearData> ListOfParts)
+void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 {
 	if (ListOfParts.Num() == 0)
 		return;
@@ -28,7 +28,7 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponGearData> ListOfParts)
 		{
 			UTexture* Texture;
 			FVector2D TextureSize = FVector2D(256, 256);
-			if (ListOfParts[i].BaseWeaponPartData.Material->GetTextureParameterValue(FName("BaseTexture"), Texture))
+			if (ListOfParts[i].BaseWeaponPartData.VisualProperties.Material->GetTextureParameterValue(FName("BaseTexture"), Texture))
 			{
 				if (TObjectPtr<UTexture2D> Texture2D = Cast<UTexture2D>(Texture))
 				{
@@ -40,7 +40,7 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponGearData> ListOfParts)
 			}
 			
 			FSlateBrush Brush;
-			Brush.SetResourceObject(ListOfParts[i].BaseWeaponPartData.Material);
+			Brush.SetResourceObject(ListOfParts[i].BaseWeaponPartData.VisualProperties.Material);
 			Brush.ImageSize = TextureSize;
 			ItemPartIconWidget->GetContent_Image()->SetBrush(Brush);
 			ItemPartIconWidget->GetContent_Image()->SetOpacity(1.0f);
@@ -53,8 +53,6 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponGearData> ListOfParts)
 		}
 	}
 }
-
-
 
 void UWeaponPartListWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {

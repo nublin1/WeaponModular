@@ -3,7 +3,7 @@
 
 #include "WeaponModular/Public/World/Weapon.h"
 
-#include "Helpers/SceneMarker.h"
+#include "Helpers/SC_WeaponPartAttachmentPoint.h"
 
 
 AWeapon::AWeapon()

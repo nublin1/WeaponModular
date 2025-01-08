@@ -6,7 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Weapon.generated.h"
 
-class USceneMarker;
+class USC_WeaponPartAttachmentPoint;
+
 
 UCLASS()
 class WEAPONMODULAR_API AWeapon : public AActor
@@ -22,7 +23,7 @@ protected:
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Markers")
 	//TObjectPtr<USceneMarker> BarrelMarker;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TArray<TObjectPtr<USceneMarker>> WeaponMarkers;
+	TArray<TObjectPtr<USC_WeaponPartAttachmentPoint>> WeaponMarkers;
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;

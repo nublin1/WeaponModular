@@ -12,7 +12,7 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Engine/UserInterfaceSettings.h"
-#include "Helpers/SceneMarker.h"
+#include "Helpers/SC_WeaponPartAttachmentPoint.h"
 #include "HUD/UI/Slots/WeaponPartListWidget.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -38,36 +38,10 @@ void UItemPartWidget::UpdateVisual()
 	}
 
 
-	MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(RetrievedWeaponPartRow->BaseWeaponPartData.Material);
+	MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(RetrievedWeaponPartRow->BaseWeaponPartData.VisualProperties.Material);
 	MainItemIconWidget->GetContent_Image()->SetOpacity(1.0f);
 	FText Name = FText::FromString(RetrievedWeaponPartRow->Name.ToString());
 	MainItemIconWidget->GetContent_Text_Name()->SetText(Name);
-}
-
-TArray<FWeaponGearData> UItemPartWidget::GetWeaponPartsByType()
-{
-	TArray<FWeaponGearData> FilteredParts;
-	if (!WidgetTable) // Проверяем, что DataTable существует
-	{
-		UE_LOG(LogTemp, Warning, TEXT("WidgetTable is null!"));
-		return FilteredParts;
-	}
-
-	TArray<FName> RowNames = WidgetTable->GetRowNames();
-	if (RowNames.Num() == 0)
-		return FilteredParts;
-
-	for (const FName& RowName : RowNames)
-	{
-		FWeaponGearData* Row = WidgetTable->FindRow<FWeaponGearData>(RowName, TEXT(""));
-
-		if (Row && Row->BaseWeaponPartData.WeaponGearPartType == WidgetType)
-		{
-			FilteredParts.Add(*Row);
-		}
-	}
-
-	return FilteredParts;
 }
 
 void UItemPartWidget::ListButtonClick()
@@ -112,7 +86,13 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 	if (UWeaponPartListWidget* WidgetInstance = CreateWidget<UWeaponPartListWidget>(
 		GetWorld(), WeaponPartListWidgetClass))
 	{
-		auto CountParts = GetWeaponPartsByType();
+		auto CountParts = UWeaponPartDataUtilities::GetSpecificWeaponParts(
+			WidgetTable,
+			WidgetWeaponPartType.WeaponPartType,
+			WidgetWeaponPartType.WeaponPartType == EWeaponPartType::Essential?
+				static_cast<int>(WidgetWeaponPartType.WeaponEssential) : static_cast<int>(WidgetWeaponPartType.WeaponAttachment)
+			);
+		
 		if (CountParts.Num() > 0)
 		{
 			WidgetInstance->AddPartsToList(CountParts);

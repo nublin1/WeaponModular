@@ -5,17 +5,16 @@
 #include "CoreMinimal.h"
 #include "Components/Image.h"
 #include "Components/SceneComponent.h"
-#include "Data/WeaponGearData.h"
+#include "Data/WeaponPartData.h"
 #include "Styling/SlateBrush.h"
-#include "SceneMarker.generated.h"
+#include "SC_WeaponPartAttachmentPoint.generated.h"
 
-enum class EWeaponGearPartSlot : uint8;
+
 class UImage;
 
 
-
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class WEAPONMODULAR_API USceneMarker : public USceneComponent
+class WEAPONMODULAR_API USC_WeaponPartAttachmentPoint : public USceneComponent
 {
 	GENERATED_BODY()
 
@@ -23,23 +22,23 @@ public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EWeaponGearPartSlot WeaponMarkerType;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FWeaponPartTypeProperties WeaponPointType;
 
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
-	USceneMarker();
+	USC_WeaponPartAttachmentPoint();
 
 	UFUNCTION()
 	virtual void UpdateStaticMeshComponent();
 
 	// Getters
 	FDataTableRowHandle GetWeaponPartRow() {return WeaponPartRow;}
-	FWeaponGearData* GetRetrievedWeaponPartData() {return RetrievedWeaponPartData;}
+	FWeaponPartData* GetRetrievedWeaponPartData() {return RetrievedWeaponPartData;}
 
 	// Setters
-	void SetRetrievedWeaponPartData(FWeaponGearData* NewWeaponPartData);
+	void SetRetrievedWeaponPartData(FWeaponPartData* NewWeaponPartData);
 
 protected:
 	//====================================================================
@@ -50,7 +49,7 @@ protected:
 	TObjectPtr<USlateBrushAsset> BrushTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FDataTableRowHandle WeaponPartRow;
-	FWeaponGearData* RetrievedWeaponPartData;
+	FWeaponPartData* RetrievedWeaponPartData;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;

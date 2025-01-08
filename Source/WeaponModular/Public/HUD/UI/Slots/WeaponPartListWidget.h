@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Data/WeaponGearData.h"
+#include "Data/WeaponPartData.h"
 #include "HUD/UI/BUIUserWidget.h"
 #include "WeaponPartListWidget.generated.h"
 
 
+struct FWeaponPartData;
 class UVerticalBox;
 class UItemPartIconWidget;
 /**
@@ -24,11 +25,11 @@ public:
 	//====================================================================
 	UWeaponPartListWidget();
 
-	void AddPartsToList(TArray<FWeaponGearData> ListOfParts);
+	void AddPartsToList(TArray<FWeaponPartData> ListOfParts);
 
 	//Getters
 	UVerticalBox* GetWeaponPartListBox() {return WeaponPartList_VerticalBox;}
-	TMap<TObjectPtr<UItemPartIconWidget>, FWeaponGearData> GetItemPartIconToWeaponPartMap() {return ItemPartIconToWeaponPartMap;}
+	TMap<TObjectPtr<UItemPartIconWidget>, FWeaponPartData> GetItemPartIconToWeaponPartMap() {return ItemPartIconToWeaponPartMap;}
 	
 protected:
 	//====================================================================
@@ -43,7 +44,7 @@ protected:
 
 	// Data
 	UPROPERTY(BlueprintReadOnly)
-	TMap<TObjectPtr<UItemPartIconWidget>, FWeaponGearData> ItemPartIconToWeaponPartMap;
+	TMap<TObjectPtr<UItemPartIconWidget>, FWeaponPartData> ItemPartIconToWeaponPartMap;
 
 	//====================================================================
 	// FUNCTIONS
