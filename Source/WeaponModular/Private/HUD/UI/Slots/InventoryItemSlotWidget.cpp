@@ -15,15 +15,16 @@ void UInventoryItemSlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	TArray<UItemPartWidget*> ItemPartWidgets; 
-	TFunction<void(UWidget*, TArray<UItemPartWidget*>&)> GatherChildWidgets = [&GatherChildWidgets](UWidget* ParentWidget, TArray<UItemPartWidget*>& OutWidgets)
+	TArray<UItemPartWidget*> ItemPartWidgets;
+	TFunction<void(UWidget*, TArray<UItemPartWidget*>&)> GatherChildWidgets = [&GatherChildWidgets
+		](UWidget* ParentWidget, TArray<UItemPartWidget*>& OutWidgets)
 	{
 		if (!ParentWidget) return;
 		if (UItemPartWidget* ItemPartWidget = Cast<UItemPartWidget>(ParentWidget))
 		{
 			OutWidgets.Add(ItemPartWidget);
 		}
-		
+
 		if (UPanelWidget* Panel = Cast<UPanelWidget>(ParentWidget))
 		{
 			for (int32 i = 0; i < Panel->GetChildrenCount(); ++i)
@@ -38,15 +39,115 @@ void UInventoryItemSlotWidget::NativeConstruct()
 		GatherChildWidgets(MainCanvas.Get(), ItemPartWidgets);
 	}
 
-	if (ItemPartWidgets.Num()>0)
+	if (ItemPartWidgets.Num() > 0)
 		PartWidgets = ItemPartWidgets;
 }
 
+void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* AttachmentPoint)
+{
+	TObjectPtr<UItemPartWidget> ItemWidget = CreateItemPartWidget();
+	if (ItemWidget)
+	{
+		TObjectPtr<UCanvasPanelSlot> CanvasSlot = MainCanvas->AddChildToCanvas(ItemWidget);
+		if (CanvasSlot)
+		{
+			CanvasSlot->SetPosition(Position);
+			CanvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+		}
+	}
+}
+
+void UInventoryItemSlotWidget::CalculateItemSlotPositions()
+{
+	const FVector2D WidgetSize = GetCachedGeometry().GetLocalSize();
+	const FVector2D Center(WidgetSize.X / 2.0f, WidgetSize.Y / 2.0f);
+
+	for (int32 i = 0; i < TotalItemWidgets; ++i)
+	{
+		FVector2D Position;
+		switch (WidgetsMethodLocation)
+		{
+		case EWidgetsMethodLocation::Oval:
+			{
+				float OvalWidth = WidgetSize.X * 0.8f;
+				float OvalHeight = WidgetSize.Y * 0.7f;
+				Position = CalculateOvalPosition(i, Center, OvalWidth, OvalHeight);
+				break;
+			}
+
+		case EWidgetsMethodLocation::Square:
+			{
+				float SquareWidth = WidgetSize.X * 0.8f;
+				float SquareHeight = WidgetSize.Y * 0.8f;
+				Position = CalculateSquarePosition(i, Center, SquareWidth, SquareHeight);
+				break;
+			}
+		}
+		
+		ItemsWidgetPositions.Add(Position);
+	}
+}
+
+FVector2D UInventoryItemSlotWidget::CalculateOvalPosition(int32 Index, const FVector2D& Center,
+                                                          float OvalWidth, float OvalHeight)
+{
+	float Angle = 2.0f * PI * Index / TotalItemWidgets;
+	float X = Center.X + (OvalWidth / 2.0f) * FMath::Cos(Angle);
+	float Y = Center.Y + (OvalHeight / 2.0f) * FMath::Sin(Angle);
+	float PerspectiveFactor = 1.0f + 0.2f * FMath::Abs(FMath::Sin(Angle)); // Увеличиваем разрыв в центре
+
+	//return FVector2D(X, Y);
+	return FVector2D(X, Y * PerspectiveFactor);
+}
+
+FVector2D UInventoryItemSlotWidget::CalculateSquarePosition(int32 Index, const FVector2D& Center,
+                                                            float SquareWidth, float SquareHeight)
+{
+	float Perimeter = 2.0f * (SquareWidth + SquareHeight);
+	float StepLength = Perimeter / TotalItemWidgets;
+
+	float CurrentLength = StepLength * Index;
+	FVector2D Position;
+
+	if (CurrentLength <= SquareWidth) // Up
+	{
+		Position = FVector2D(Center.X - SquareWidth / 2.0f + CurrentLength, Center.Y - SquareHeight / 2.0f);
+	}
+	else if (CurrentLength <= SquareWidth + SquareHeight) // Right
+	{
+		CurrentLength -= SquareWidth;
+		Position = FVector2D(Center.X + SquareWidth / 2.0f, Center.Y - SquareHeight / 2.0f + CurrentLength);
+	}
+	else if (CurrentLength <= 2.0f * SquareWidth + SquareHeight) // Down
+	{
+		CurrentLength -= (SquareWidth + SquareHeight);
+		Position = FVector2D(Center.X + SquareWidth / 2.0f - CurrentLength, Center.Y + SquareHeight / 2.0f);
+	}
+	else // Left
+	{
+		CurrentLength -= (2.0f * SquareWidth + SquareHeight);
+		Position = FVector2D(Center.X - SquareWidth / 2.0f, Center.Y + SquareHeight / 2.0f - CurrentLength);
+	}
+
+	return Position;
+}
+
+UItemPartWidget* UInventoryItemSlotWidget::CreateItemPartWidget()
+{
+	if (!ItemPartWidgetClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ItemPartWidgetClass is not set!"));
+		return nullptr;
+	}
+
+	return CreateWidget<UItemPartWidget>(GetWorld(), ItemPartWidgetClass);
+}
+
 FVector2D UInventoryItemSlotWidget::CalculateCoordinates(USceneCaptureComponent2D* SceneCaptureComponent,
-	FVector WorldPosition)
+                                                         FVector WorldPosition)
 {
 	auto WPositions = WorldPosition;
-	
+
 	auto Result = UUtilitiesRender::WorldToTextureCoordinates(SceneCaptureComponent, WPositions);
 
 	return FVector2D(Result.X, Result.Y);
@@ -58,9 +159,9 @@ FReply UInventoryItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeom
 
 	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
-		bIsDragging = true; 
+		bIsDragging = true;
 		LastMousePosition = InMouseEvent.GetScreenSpacePosition();
-		
+
 		return FReply::Handled().CaptureMouse(TakeWidget());
 	}
 	return Reply;

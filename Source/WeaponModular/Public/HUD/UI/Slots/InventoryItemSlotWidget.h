@@ -7,6 +7,7 @@
 #include "Utilities/UtilitiesRender.h"
 #include "InventoryItemSlotWidget.generated.h"
 
+class USC_WeaponPartAttachmentPoint;
 class ULineDrawerWidget;
 class UImage;
 class UUtilitiesRender;
@@ -16,6 +17,13 @@ class UItemPartWidget;
 #pragma region Delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMoveDelta, FVector2D, Delta);
 #pragma endregion
+
+UENUM(Blueprintable)
+enum class EWidgetsMethodLocation: uint8
+{
+	Oval			UMETA(DisplayName = "Oval"),
+	Square			UMETA(DisplayName = "Square"),
+};
 
 UCLASS()
 class WEAPONMODULAR_API UInventoryItemSlotWidget   : public UBUIUserWidget
@@ -28,6 +36,12 @@ public:
 	//====================================================================
 	UPROPERTY(BlueprintAssignable)
 	FOnMoveDelta OnMoveDelta;
+
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
+	UFUNCTION()
+	void AddItemPartWidget (USC_WeaponPartAttachmentPoint* AttachmentPoint);
 
 protected:
 	//====================================================================
@@ -43,6 +57,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
 	TArray<TObjectPtr<UItemPartWidget>> PartWidgets;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
+	TSubclassOf<UItemPartWidget> ItemPartWidgetClass;
+
 	// Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USceneCaptureComponent2D> CaptureComponent;
@@ -52,6 +69,14 @@ protected:
 	FVector2D LastMousePosition;
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector2D> BoxesToDraw;
+
+	// ItemWidgets data
+	UPROPERTY()
+	int32 TotalItemWidgets = 12;
+	UPROPERTY(BlueprintReadWrite)
+	TArray<FVector2D> ItemsWidgetPositions;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EWidgetsMethodLocation WidgetsMethodLocation = EWidgetsMethodLocation::Oval;
 	
 
 	//====================================================================
@@ -59,6 +84,14 @@ protected:
 	//====================================================================
 	virtual void NativeConstruct() override;
 
+	UFUNCTION(BlueprintCallable)
+	void CalculateItemSlotPositions();
+	UFUNCTION()
+	FVector2D CalculateOvalPosition(int32 Index, const FVector2D& Center, float OvalWidth, float OvalHeight);
+	UFUNCTION()
+	FVector2D CalculateSquarePosition(int32 Index,const FVector2D& Center, float SquareWidth, float SquareHeight);
+	UFUNCTION()
+	UItemPartWidget* CreateItemPartWidget();
 	UFUNCTION(BlueprintCallable)
 	FVector2D CalculateCoordinates(USceneCaptureComponent2D* SceneCaptureComponent, FVector WorldPosition);
 	

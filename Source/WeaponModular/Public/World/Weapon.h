@@ -20,8 +20,6 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Markers")
-	//TObjectPtr<USceneMarker> BarrelMarker;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TArray<TObjectPtr<USC_WeaponPartAttachmentPoint>> WeaponMarkers;
 
