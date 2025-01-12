@@ -31,6 +31,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateVisual();
 
+	//Setters
+	void SetWidgetTable(UDataTable* NewDataTable) { WidgetTable = NewDataTable;	}
+	void SetTargetMarkerLinked(USC_WeaponPartAttachmentPoint* NewWeaponPartAttachmentPoint) {TargetMarkerLinked =NewWeaponPartAttachmentPoint; }
+	void SetWidgetWeaponPartType(FWeaponPartTypeProperties NewWeaponPartTypeProperties) {WidgetWeaponPartType = NewWeaponPartTypeProperties;}
 
 protected:
 	//====================================================================

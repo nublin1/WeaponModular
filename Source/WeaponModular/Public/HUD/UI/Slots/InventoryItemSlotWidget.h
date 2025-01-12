@@ -25,6 +25,17 @@ enum class EWidgetsMethodLocation: uint8
 	Square			UMETA(DisplayName = "Square"),
 };
 
+USTRUCT()
+struct FItemsWidgetSlot
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FVector2D SlotPosition;
+	UPROPERTY()
+	bool bIsAvaiable = true;
+};
+
 UCLASS()
 class WEAPONMODULAR_API UInventoryItemSlotWidget   : public UBUIUserWidget
 {
@@ -40,7 +51,7 @@ public:
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void AddItemPartWidget (USC_WeaponPartAttachmentPoint* AttachmentPoint);
 
 protected:
@@ -73,8 +84,8 @@ protected:
 	// ItemWidgets data
 	UPROPERTY()
 	int32 TotalItemWidgets = 12;
-	UPROPERTY(BlueprintReadWrite)
-	TArray<FVector2D> ItemsWidgetPositions;
+	UPROPERTY()
+	TArray<FItemsWidgetSlot> ItemsWidgetPositions;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EWidgetsMethodLocation WidgetsMethodLocation = EWidgetsMethodLocation::Oval;
 	
@@ -92,6 +103,8 @@ protected:
 	FVector2D CalculateSquarePosition(int32 Index,const FVector2D& Center, float SquareWidth, float SquareHeight);
 	UFUNCTION()
 	UItemPartWidget* CreateItemPartWidget();
+	UFUNCTION()
+	int32 FindIndexOfClosestAvaiableWidgetPosition(FVector2D ComparedPosition);
 	UFUNCTION(BlueprintCallable)
 	FVector2D CalculateCoordinates(USceneCaptureComponent2D* SceneCaptureComponent, FVector WorldPosition);
 	

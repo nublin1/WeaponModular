@@ -3,18 +3,13 @@
 
 #include "WeaponModular/Public/HUD/UI/Slots/ItemPartWidget.h"
 
-#include "GameplayTagsManager.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
-#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/Button.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
-#include "Engine/UserInterfaceSettings.h"
 #include "Helpers/SC_WeaponPartAttachmentPoint.h"
 #include "HUD/UI/Slots/WeaponPartListWidget.h"
-#include "Kismet/GameplayStatics.h"
 
 void UItemPartWidget::NativeOnInitialized()
 {
@@ -109,8 +104,8 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 
 		FVector2D RenderCurrentPosition = this->GetCachedGeometry().GetAbsolutePosition();
 		FVector2D CurrentSize = this->GetCachedGeometry().GetAbsoluteSize();
-		FVector2D LocalSize = this->GetCachedGeometry().GetLocalSize();
-		float Scale = this->GetCachedGeometry().GetAccumulatedLayoutTransform().GetScale();
+		//FVector2D LocalSize = this->GetCachedGeometry().GetLocalSize();
+		//float Scale = this->GetCachedGeometry().GetAccumulatedLayoutTransform().GetScale();
 		FVector2D ModPosition = FVector2D(RenderCurrentPosition.X, RenderCurrentPosition.Y + CurrentSize.Y);
 
 		FVector2D PixelPosition;

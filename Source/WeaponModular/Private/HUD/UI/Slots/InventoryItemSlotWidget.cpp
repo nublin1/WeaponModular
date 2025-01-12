@@ -7,6 +7,7 @@
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/PanelWidget.h"
+#include "Helpers/SC_WeaponPartAttachmentPoint.h"
 #include "HUD/UI/Slots/ItemPartWidget.h"
 #include "Materials/MaterialExpressionSceneColor.h"
 
@@ -45,14 +46,27 @@ void UInventoryItemSlotWidget::NativeConstruct()
 
 void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* AttachmentPoint)
 {
-	TObjectPtr<UItemPartWidget> ItemWidget = CreateItemPartWidget();
-	if (ItemWidget)
+	auto PosInScreen = CalculateCoordinates(CaptureComponent, AttachmentPoint->GetComponentLocation());
+	auto Index = FindIndexOfClosestAvaiableWidgetPosition(PosInScreen);
+	if (Index < 0)
+		return;
+
+	if (TObjectPtr<UItemPartWidget> NewItemWidget = CreateItemPartWidget())
 	{
-		TObjectPtr<UCanvasPanelSlot> CanvasSlot = MainCanvas->AddChildToCanvas(ItemWidget);
+		//NewItemWidget->
+		TObjectPtr<UCanvasPanelSlot> CanvasSlot = MainCanvas->AddChildToCanvas(NewItemWidget);
 		if (CanvasSlot)
 		{
-			CanvasSlot->SetPosition(Position);
-			CanvasSlot->SetAlignment(FVector2D(0.5f, 0.5f));
+			CanvasSlot->SetPosition(ItemsWidgetPositions[Index].SlotPosition);
+			CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+			CanvasSlot->SetAutoSize(true);
+			ItemsWidgetPositions[Index].bIsAvaiable = false;
+			NewItemWidget->SetTargetMarkerLinked(AttachmentPoint);
+			NewItemWidget->SetWidgetTable(static_cast<UDataTable*>(AttachmentPoint->GetWeaponPartRow().DataTable));
+			NewItemWidget->SetWidgetWeaponPartType(AttachmentPoint->WeaponPointType);
+			NewItemWidget->UpdateVisual();
+			
+			PartWidgets.Add(NewItemWidget);
 		}
 	}
 }
@@ -83,8 +97,10 @@ void UInventoryItemSlotWidget::CalculateItemSlotPositions()
 				break;
 			}
 		}
-		
-		ItemsWidgetPositions.Add(Position);
+
+		FItemsWidgetSlot NewItemsWidgetSlot;
+		NewItemsWidgetSlot.SlotPosition = Position;
+		ItemsWidgetPositions.Add(NewItemsWidgetSlot);
 	}
 }
 
@@ -141,6 +157,24 @@ UItemPartWidget* UInventoryItemSlotWidget::CreateItemPartWidget()
 	}
 
 	return CreateWidget<UItemPartWidget>(GetWorld(), ItemPartWidgetClass);
+}
+
+int32 UInventoryItemSlotWidget::FindIndexOfClosestAvaiableWidgetPosition(FVector2D ComparedPosition)
+{
+	int32 Index = -1;
+	float ClosestDistance = FLT_MAX;
+	
+	for (int32 i = 0; i < ItemsWidgetPositions.Num(); ++i)
+	{
+		float Distance = FVector2D::Distance(ComparedPosition, ItemsWidgetPositions[i].SlotPosition);
+		if (Distance < ClosestDistance &&  ItemsWidgetPositions[i].bIsAvaiable == true)
+		{
+			ClosestDistance = Distance;
+			Index = i;
+		}
+	}
+	
+	return Index;
 }
 
 FVector2D UInventoryItemSlotWidget::CalculateCoordinates(USceneCaptureComponent2D* SceneCaptureComponent,
