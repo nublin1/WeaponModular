@@ -57,15 +57,18 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 		TObjectPtr<UCanvasPanelSlot> CanvasSlot = MainCanvas->AddChildToCanvas(NewItemWidget);
 		if (CanvasSlot)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("CurrentSize X: %f, CurrentSize Y: %f"), CanvasSlot->GetSize().X,  CanvasSlot->GetSize().Y);
 			CanvasSlot->SetPosition(ItemsWidgetPositions[Index].SlotPosition);
 			CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
 			CanvasSlot->SetAutoSize(true);
+			
 			ItemsWidgetPositions[Index].bIsAvaiable = false;
 			NewItemWidget->SetTargetMarkerLinked(AttachmentPoint);
 			NewItemWidget->SetWidgetTable(static_cast<UDataTable*>(AttachmentPoint->GetWeaponPartRow().DataTable));
 			NewItemWidget->SetWidgetWeaponPartType(AttachmentPoint->WeaponPointType);
 			NewItemWidget->UpdateVisual();
-			
+
+			ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::ListButtonClick);
 			PartWidgets.Add(NewItemWidget);
 		}
 	}
@@ -185,6 +188,25 @@ FVector2D UInventoryItemSlotWidget::CalculateCoordinates(USceneCaptureComponent2
 	auto Result = UUtilitiesRender::WorldToTextureCoordinates(SceneCaptureComponent, WPositions);
 
 	return FVector2D(Result.X, Result.Y);
+}
+
+void UInventoryItemSlotWidget::ListButtonClick()
+{
+	if (!LinkedWeaponPartListWidget)
+	{
+		CreateWeaponPartListWidget();
+	}
+	else
+	{
+		if (LinkedWeaponPartListWidget->GetVisibility() == ESlateVisibility::Visible)
+		{
+			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Collapsed);
+		}
+		else
+		{
+			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
 }
 
 FReply UInventoryItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)

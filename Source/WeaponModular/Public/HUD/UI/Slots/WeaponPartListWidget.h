@@ -25,6 +25,11 @@ public:
 	//====================================================================
 	UWeaponPartListWidget();
 
+	UFUNCTION()
+	void ClearPartList() const;
+	UFUNCTION()
+	void AddEmptyPartToList();
+	UFUNCTION()
 	void AddPartsToList(TArray<FWeaponPartData> ListOfParts);
 
 	//Getters

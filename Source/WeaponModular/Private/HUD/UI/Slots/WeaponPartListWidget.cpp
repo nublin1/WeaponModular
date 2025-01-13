@@ -17,6 +17,19 @@ UWeaponPartListWidget::UWeaponPartListWidget()
 	
 }
 
+void UWeaponPartListWidget::ClearPartList() const
+{
+	WeaponPartList_VerticalBox->ClearChildren();
+}
+
+void UWeaponPartListWidget::AddEmptyPartToList()
+{
+	if (TObjectPtr<UItemPartIconWidget> ItemPartIconWidget = CreateWidget<UItemPartIconWidget>(GetWorld(), ItemPartIconWidgetClass))
+	{
+		WeaponPartList_VerticalBox->AddChildToVerticalBox(ItemPartIconWidget);
+	}
+}
+
 void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 {
 	if (ListOfParts.Num() == 0)
@@ -58,5 +71,5 @@ void UWeaponPartListWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
 
-	this->SetVisibility(ESlateVisibility::Collapsed);
+	//this->SetVisibility(ESlateVisibility::Collapsed);
 }

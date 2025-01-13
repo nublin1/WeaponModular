@@ -45,6 +45,9 @@ public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UCanvasPanel> MainCanvas;
+	
 	UPROPERTY(BlueprintAssignable)
 	FOnMoveDelta OnMoveDelta;
 
@@ -59,8 +62,8 @@ protected:
 	// PROPERTIES AND VARIABLES
 	//====================================================================
 	// Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCanvasPanel> MainCanvas;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	//TObjectPtr<UCanvasPanel> MainCanvas;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UImage> RT_Image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
@@ -107,6 +110,9 @@ protected:
 	int32 FindIndexOfClosestAvaiableWidgetPosition(FVector2D ComparedPosition);
 	UFUNCTION(BlueprintCallable)
 	FVector2D CalculateCoordinates(USceneCaptureComponent2D* SceneCaptureComponent, FVector WorldPosition);
+
+	UFUNCTION()
+	void ListButtonClick();
 	
 	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

@@ -15,6 +15,11 @@ class UButton;
 class USlateBrushAsset;
 enum class EWeaponGearPartSlot : uint8;
 class USC_WeaponPartAttachmentPoint;
+
+#pragma region Delegates
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnListButtonClick, UItemPartWidget*, ItemPartWidget);
+#pragma endregion
+
 /**
  * 
  */
@@ -25,11 +30,21 @@ class WEAPONMODULAR_API UItemPartWidget : public UBUIUserWidget
 
 public:
 	//====================================================================
+	// PROPERTIES AND VARIABLES
+	//====================================================================
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnListButtonClick OnListButtonClick;
+	
+	//====================================================================
 	// FUNCTIONS
 	//====================================================================
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateVisual();
+
+	// Getters
+	UWeaponPartListWidget* GetPartListWidget() {return LinkedWeaponPartListWidget;}
 
 	//Setters
 	void SetWidgetTable(UDataTable* NewDataTable) { WidgetTable = NewDataTable;	}
