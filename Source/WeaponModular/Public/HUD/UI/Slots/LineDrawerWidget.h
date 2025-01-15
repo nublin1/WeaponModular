@@ -4,11 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "HUD/UI/BUIUserWidget.h"
+#include "Math/Color.h"
 #include "LineDrawerWidget.generated.h"
 
-/**
- * 
- */
+USTRUCT(BlueprintType)
+struct FLineDrawInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
+	FVector4 LineCoordinates; 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
+	FLinearColor LineColor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
+	float LineThickness;
+};
+
 UCLASS()
 class WEAPONMODULAR_API ULineDrawerWidget : public UBUIUserWidget
 {
@@ -24,16 +37,18 @@ public:
 	// FUNCTIONS
 	//====================================================================
 	ULineDrawerWidget();
-	
+
 	UFUNCTION(BlueprintCallable)
-	bool AddLineToDraw(FString LineName, FVector2D StartPoint, FVector2D EndPoint);
+	void ClearLinesToDraw();
+	UFUNCTION(BlueprintCallable)
+	bool AddLineToDraw(FString LineName, FVector2D StartPoint, FVector2D EndPoint, FLinearColor ColorLine = FLinearColor::Yellow, float Thickness = 1.0f);
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
 	UPROPERTY(BlueprintReadWrite)
-	TMap<FString, FVector4> LineDrawers;
+	TMap<FString, FLineDrawInfo> LineDrawers;
 
 	//====================================================================
 	// FUNCTIONS

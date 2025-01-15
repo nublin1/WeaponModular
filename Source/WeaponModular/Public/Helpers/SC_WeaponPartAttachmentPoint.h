@@ -13,6 +13,7 @@
 class UImage;
 
 
+
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WEAPONMODULAR_API USC_WeaponPartAttachmentPoint : public USceneComponent
 {
@@ -34,7 +35,9 @@ public:
 	virtual void UpdateStaticMeshComponent();
 
 	// Getters
-	FDataTableRowHandle GetWeaponPartRow() {return WeaponPartRow;}
+	USlateBrushAsset* GetBrushTexture() {return BrushTexture;}
+	UDataTable* GetUsableTable() {return UsableTable;}
+	FDataTableRowHandle GetStartingWeaponPartRow() {return StartingWeaponPartRow;}
 	FWeaponPartData* GetRetrievedWeaponPartData() {return RetrievedWeaponPartData;}
 
 	// Setters
@@ -48,7 +51,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USlateBrushAsset> BrushTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FDataTableRowHandle WeaponPartRow;
+	TObjectPtr<UDataTable> UsableTable;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FDataTableRowHandle StartingWeaponPartRow;
 	FWeaponPartData* RetrievedWeaponPartData;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

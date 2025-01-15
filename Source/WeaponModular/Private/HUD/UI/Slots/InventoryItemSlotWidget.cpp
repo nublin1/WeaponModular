@@ -3,12 +3,15 @@
 
 #include "HUD/UI/Slots/InventoryItemSlotWidget.h"
 
+#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/PanelWidget.h"
+#include "Components/ScrollBox.h"
 #include "Helpers/SC_WeaponPartAttachmentPoint.h"
 #include "HUD/UI/Slots/ItemPartWidget.h"
+#include "HUD/UI/Slots/LineDrawerWidget.h"
 #include "Materials/MaterialExpressionSceneColor.h"
 
 
@@ -17,12 +20,13 @@ void UInventoryItemSlotWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	TArray<UItemPartWidget*> ItemPartWidgets;
-	TFunction<void(UWidget*, TArray<UItemPartWidget*>&)> GatherChildWidgets = [&GatherChildWidgets
+	TFunction<void(UWidget*, TArray<UItemPartWidget*>&)> GatherChildWidgets = [&GatherChildWidgets, this
 		](UWidget* ParentWidget, TArray<UItemPartWidget*>& OutWidgets)
 	{
 		if (!ParentWidget) return;
 		if (UItemPartWidget* ItemPartWidget = Cast<UItemPartWidget>(ParentWidget))
 		{
+			ItemPartWidget->OnListButtonClick.AddDynamic(this, &UInventoryItemSlotWidget::ListButtonClick);
 			OutWidgets.Add(ItemPartWidget);
 		}
 
@@ -41,7 +45,20 @@ void UInventoryItemSlotWidget::NativeConstruct()
 	}
 
 	if (ItemPartWidgets.Num() > 0)
+	{
 		PartWidgets = ItemPartWidgets;
+	}
+}
+
+void UInventoryItemSlotWidget::RecalculateLinesToDraw()
+{
+	if (!WBP_LineDrawer)
+		return;
+	
+	for (auto PWidget : PartWidgets)
+	{
+		CalculateLineToDraw(PWidget);
+	}
 }
 
 void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* AttachmentPoint)
@@ -53,23 +70,25 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 
 	if (TObjectPtr<UItemPartWidget> NewItemWidget = CreateItemPartWidget())
 	{
-		//NewItemWidget->
 		TObjectPtr<UCanvasPanelSlot> CanvasSlot = MainCanvas->AddChildToCanvas(NewItemWidget);
 		if (CanvasSlot)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("CurrentSize X: %f, CurrentSize Y: %f"), CanvasSlot->GetSize().X,  CanvasSlot->GetSize().Y);
 			CanvasSlot->SetPosition(ItemsWidgetPositions[Index].SlotPosition);
 			CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
 			CanvasSlot->SetAutoSize(true);
-			
+				
 			ItemsWidgetPositions[Index].bIsAvaiable = false;
 			NewItemWidget->SetTargetMarkerLinked(AttachmentPoint);
-			NewItemWidget->SetWidgetTable(static_cast<UDataTable*>(AttachmentPoint->GetWeaponPartRow().DataTable));
+			NewItemWidget->SetWidgetTable(static_cast<UDataTable*>(AttachmentPoint->GetUsableTable()));
 			NewItemWidget->SetWidgetWeaponPartType(AttachmentPoint->WeaponPointType);
 			NewItemWidget->UpdateVisual();
 
-			ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::ListButtonClick);
+			NewItemWidget->OnListButtonClick.AddDynamic(this, &UInventoryItemSlotWidget::ListButtonClick);
 			PartWidgets.Add(NewItemWidget);
+
+			CalculateLineToDraw(NewItemWidget);
+			if (OnItemPartWidgetAdded.IsBound())
+				OnItemPartWidgetAdded.Broadcast(NewItemWidget);
 		}
 	}
 }
@@ -99,6 +118,12 @@ void UInventoryItemSlotWidget::CalculateItemSlotPositions()
 				Position = CalculateSquarePosition(i, Center, SquareWidth, SquareHeight);
 				break;
 			}
+		case EWidgetsMethodLocation::Circle:
+			{
+				float Radius = WidgetSize.X * 0.8f; 
+				Position = CalculateCirclePosition(i, Center, Radius, WidgetSize);
+				break;
+			}
 		}
 
 		FItemsWidgetSlot NewItemsWidgetSlot;
@@ -113,7 +138,7 @@ FVector2D UInventoryItemSlotWidget::CalculateOvalPosition(int32 Index, const FVe
 	float Angle = 2.0f * PI * Index / TotalItemWidgets;
 	float X = Center.X + (OvalWidth / 2.0f) * FMath::Cos(Angle);
 	float Y = Center.Y + (OvalHeight / 2.0f) * FMath::Sin(Angle);
-	float PerspectiveFactor = 1.0f + 0.2f * FMath::Abs(FMath::Sin(Angle)); // Увеличиваем разрыв в центре
+	float PerspectiveFactor = 1.0f + 0.2f * FMath::Abs(FMath::Sin(Angle));
 
 	//return FVector2D(X, Y);
 	return FVector2D(X, Y * PerspectiveFactor);
@@ -147,6 +172,29 @@ FVector2D UInventoryItemSlotWidget::CalculateSquarePosition(int32 Index, const F
 		CurrentLength -= (2.0f * SquareWidth + SquareHeight);
 		Position = FVector2D(Center.X - SquareWidth / 2.0f, Center.Y + SquareHeight / 2.0f - CurrentLength);
 	}
+
+	return Position;
+}
+
+FVector2D UInventoryItemSlotWidget::CalculateCirclePosition(int32 Index, const FVector2D& Center, float Radius,
+	const FVector2D& ScreenSize)
+{
+	float MaxHorizontalRadius = ScreenSize.X / 2.0f * 0.9f; 
+	float MaxVerticalRadius = ScreenSize.Y / 2.0f * 0.9f;  
+	
+	float HorizontalRadius = FMath::Min(Radius, MaxHorizontalRadius);
+	float VerticalRadius = FMath::Min(Radius, MaxVerticalRadius);
+	
+	float TotalWidgets = TotalItemWidgets > 0 ? TotalItemWidgets : 1;
+	float AngleStep = 360.0f / TotalWidgets;
+	
+	float Angle = AngleStep * Index;
+	float Radians = FMath::DegreesToRadians(Angle);
+	
+	FVector2D Position = FVector2D(
+		Center.X + HorizontalRadius * FMath::Cos(Radians),
+		Center.Y + VerticalRadius * FMath::Sin(Radians)
+	);
 
 	return Position;
 }
@@ -190,23 +238,71 @@ FVector2D UInventoryItemSlotWidget::CalculateCoordinates(USceneCaptureComponent2
 	return FVector2D(Result.X, Result.Y);
 }
 
-void UInventoryItemSlotWidget::ListButtonClick()
+void UInventoryItemSlotWidget::CalculateLineToDraw(UItemPartWidget* ItemPartWidget)
 {
-	if (!LinkedWeaponPartListWidget)
+	if (!CaptureComponent || !WBP_LineDrawer)
+		return;
+	
+	auto AttachPoint = ItemPartWidget->GetTargetMarkerLinked();
+	if (!AttachPoint)
+		return;
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+		TimerHandle, 
+		[this,AttachPoint, ItemPartWidget]()
+		{
+			auto Name = ItemPartWidget->GetName();
+			auto Position = ItemPartWidget->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0,0));
+			auto Size = ItemPartWidget->GetMainItemIconWidget()->GetCachedGeometry().GetLocalSize();
+			auto StartPoint = Position + FVector2D(Size.X / 2.0f, Size.Y / 2.0f);
+			auto EndPoint= CalculateCoordinates(CaptureComponent, AttachPoint->GetComponentLocation());
+
+			ItemPartWidget->SetBrushTargetPoint(EndPoint);
+			WBP_LineDrawer->AddLineToDraw(Name, StartPoint, EndPoint);
+
+		},
+		0.15f, 
+		false 
+	);
+}
+
+void UInventoryItemSlotWidget::ListButtonClick(UItemPartWidget* FromWidget)
+{
+	if (!FromWidget->GetPartListWidget())
 	{
-		CreateWeaponPartListWidget();
+		auto ListWidget= FromWidget->CreateWeaponPartListWidget();
+		
+		FVector2D RenderCurrentPosition = FromWidget->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0.0f, 0.0f));
+		FVector2D LocalSize = FromWidget->GetDesiredSize();
+		FVector2D ModPosition = FVector2D(RenderCurrentPosition.X, RenderCurrentPosition.Y + LocalSize.Y);
+		FVector2D ScrollSize = ListWidget->GetWeaponPartList_ScrollBox()->GetScrollbarThickness();
+
+		if (TObjectPtr<UCanvasPanelSlot> ListWidgetCanvasSlot = MainCanvas->AddChildToCanvas(ListWidget))
+		{
+			ListWidgetCanvasSlot->SetPosition(ModPosition);
+			ListWidgetCanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+			ListWidgetCanvasSlot->SetSize(FVector2D(LocalSize.X + ScrollSize.X, LocalSize.Y));
+		}
 	}
 	else
 	{
-		if (LinkedWeaponPartListWidget->GetVisibility() == ESlateVisibility::Visible)
+		if (FromWidget->GetPartListWidget()->GetVisibility() == ESlateVisibility::Visible)
 		{
-			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Collapsed);
+			FromWidget->GetPartListWidget()->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		else
 		{
-			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Visible);
+			FromWidget->GetPartListWidget()->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
+}
+
+void UInventoryItemSlotWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	RecalculateLinesToDraw();
 }
 
 FReply UInventoryItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -245,8 +341,11 @@ FReply UInventoryItemSlotWidget::NativeOnMouseMove(const FGeometry& InGeometry, 
 		LastMousePosition = CurrentMousePosition;
 		//UE_LOG(LogTemp, Warning, TEXT("Delta X: %f, Delta Y: %f"), Delta.X, Delta.Y);
 
-		if (OnMoveDelta.IsBound())
-			OnMoveDelta.Broadcast(Delta);
+		if (OnMouseMoveDelta.IsBound())
+		{
+			OnMouseMoveDelta.Broadcast(Delta);
+			
+		}
 	}
 
 	if (!HasMouseCapture())
@@ -255,5 +354,32 @@ FReply UInventoryItemSlotWidget::NativeOnMouseMove(const FGeometry& InGeometry, 
 		return FReply::Unhandled();
 	}
 
+	return Reply;
+}
+
+FReply UInventoryItemSlotWidget::NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	FReply Reply = Super::NativeOnMouseWheel(InGeometry, InMouseEvent);
+	auto EventPath = InMouseEvent.GetEventPath();
+	bool bIsCursorOverCurrentWidget = false;
+	
+	for (auto CurrentWidget : EventPath->Widgets.GetInternalArray())
+	{
+		if (CurrentWidget.Widget == this->MyWidget)
+		{
+			bIsCursorOverCurrentWidget = true;
+			break;
+		}
+	}
+
+	if (bIsCursorOverCurrentWidget)
+	{
+		float WheelDelta = InMouseEvent.GetWheelDelta();
+		if (OnMouseWheelDelta.IsBound())
+			OnMouseWheelDelta.Broadcast(WheelDelta);
+
+		return FReply::Handled();
+	}
+	
 	return Reply;
 }

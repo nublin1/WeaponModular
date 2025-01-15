@@ -16,6 +16,10 @@ class WEAPONMODULAR_API AInventorySceneRenderer : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AInventorySceneRenderer();
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateVisibleComponents();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -27,9 +31,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void RotateObject(FVector2D Delta);
+	UFUNCTION(BlueprintCallable)
+	virtual void ZoomObject(float Delta);
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 };

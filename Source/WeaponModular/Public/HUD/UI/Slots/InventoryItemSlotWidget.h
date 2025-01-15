@@ -15,7 +15,9 @@ class UCanvasPanel;
 class UItemPartWidget;
 
 #pragma region Delegates
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMoveDelta, FVector2D, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseMoveDelta, FVector2D, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseWheelDelta, float, Delta);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemPartWidgetAdded, UItemPartWidget*, WidgetAdded);
 #pragma endregion
 
 UENUM(Blueprintable)
@@ -23,6 +25,7 @@ enum class EWidgetsMethodLocation: uint8
 {
 	Oval			UMETA(DisplayName = "Oval"),
 	Square			UMETA(DisplayName = "Square"),
+	Circle			UMETA(DisplayName = "Circle"),
 };
 
 USTRUCT()
@@ -44,16 +47,19 @@ class WEAPONMODULAR_API UInventoryItemSlotWidget   : public UBUIUserWidget
 public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
-	//====================================================================
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
-	TObjectPtr<UCanvasPanel> MainCanvas;
-	
+	//====================================================================	
 	UPROPERTY(BlueprintAssignable)
-	FOnMoveDelta OnMoveDelta;
+	FOnMouseMoveDelta OnMouseMoveDelta;
+	UPROPERTY(BlueprintAssignable)
+	FOnMouseWheelDelta OnMouseWheelDelta;
+	UPROPERTY(BlueprintAssignable)
+	FOnItemPartWidgetAdded OnItemPartWidgetAdded;
 
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+	UFUNCTION(BlueprintCallable)
+	void RecalculateLinesToDraw();
 	UFUNCTION(BlueprintCallable)
 	void AddItemPartWidget (USC_WeaponPartAttachmentPoint* AttachmentPoint);
 
@@ -62,8 +68,8 @@ protected:
 	// PROPERTIES AND VARIABLES
 	//====================================================================
 	// Widgets
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
-	//TObjectPtr<UCanvasPanel> MainCanvas;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UCanvasPanel> MainCanvas;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UImage> RT_Image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
@@ -105,18 +111,24 @@ protected:
 	UFUNCTION()
 	FVector2D CalculateSquarePosition(int32 Index,const FVector2D& Center, float SquareWidth, float SquareHeight);
 	UFUNCTION()
+	FVector2D CalculateCirclePosition(int32 Index, const FVector2D& Center, float Radius, const FVector2D& ScreenSize);
+	UFUNCTION()
 	UItemPartWidget* CreateItemPartWidget();
 	UFUNCTION()
 	int32 FindIndexOfClosestAvaiableWidgetPosition(FVector2D ComparedPosition);
 	UFUNCTION(BlueprintCallable)
 	FVector2D CalculateCoordinates(USceneCaptureComponent2D* SceneCaptureComponent, FVector WorldPosition);
+	UFUNCTION(BlueprintCallable)
+	void CalculateLineToDraw(UItemPartWidget* ItemPartWidget);
 
 	UFUNCTION()
-	void ListButtonClick();
-	
-	
+	void ListButtonClick(UItemPartWidget* FromWidget);
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	
 };
 	

@@ -3,9 +3,7 @@
 
 #include "WeaponModular/Public/HUD/UI/Slots/ItemPartWidget.h"
 
-#include "Blueprint/SlateBlueprintLibrary.h"
 #include "Components/Button.h"
-#include "Components/CanvasPanelSlot.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
@@ -16,7 +14,7 @@ void UItemPartWidget::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 
-	//ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::ListButtonClick);
+	ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::ListButtonClick);
 }
 
 void UItemPartWidget::UpdateVisual()
@@ -27,12 +25,14 @@ void UItemPartWidget::UpdateVisual()
 	auto RetrievedWeaponPartRow = TargetMarkerLinked->GetRetrievedWeaponPartData();
 	if (!RetrievedWeaponPartRow)
 	{
+		BrushTexture = nullptr;
 		MainItemIconWidget->GetContent_Image()->SetBrushFromTexture(nullptr);
 		MainItemIconWidget->GetContent_Image()->SetOpacity(0.2f);
 		MainItemIconWidget->GetContent_Text_Name()->SetText(FText::FromString("Empty"));
 		return;
 	}
 
+	BrushTexture = TargetMarkerLinked->GetBrushTexture();
 	MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(RetrievedWeaponPartRow->BaseWeaponPartData.VisualProperties.Material);
 	MainItemIconWidget->GetContent_Image()->SetOpacity(1.0f);
 	FText Name = FText::FromString(RetrievedWeaponPartRow->Name.ToString());
@@ -41,23 +41,9 @@ void UItemPartWidget::UpdateVisual()
 
 void UItemPartWidget::ListButtonClick()
 {
+	if (OnListButtonClick.IsBound())
+		OnListButtonClick.Broadcast(this);
 	
-	
-	/*if (!LinkedWeaponPartListWidget)
-	{
-		CreateWeaponPartListWidget();
-	}
-	else
-	{
-		if (LinkedWeaponPartListWidget->GetVisibility() == ESlateVisibility::Visible)
-		{
-			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Collapsed);
-		}
-		else
-		{
-			LinkedWeaponPartListWidget->SetVisibility(ESlateVisibility::Visible);
-		}
-	}*/
 }
 
 void UItemPartWidget::PartClicked(UItemPartIconWidget* ItemPartIconWidget)
@@ -72,12 +58,12 @@ void UItemPartWidget::PartClicked(UItemPartIconWidget* ItemPartIconWidget)
 	UpdateVisual();
 }
 
-void UItemPartWidget::CreateWeaponPartListWidget()
+UWeaponPartListWidget* UItemPartWidget::CreateWeaponPartListWidget()
 {
 	if (!WeaponPartListWidgetClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("WeaponPartListWidgetClass is null!"));
-		return;
+		return nullptr;
 	}
 
 	if (UWeaponPartListWidget* WidgetInstance = CreateWidget<UWeaponPartListWidget>(
@@ -105,53 +91,14 @@ void UItemPartWidget::CreateWeaponPartListWidget()
 				PartWidget->OnClickedContent_Button.AddDynamic(this, &UItemPartWidget::PartClicked);
 			}
 		}
-
-		FVector2D RenderCurrentPosition = this->GetCachedGeometry().GetAbsolutePosition();
-		FVector2D CurrentSize = this->GetCachedGeometry().GetAbsoluteSize();
-		FVector2D LocalSize = this->GetDesiredSize();
-		float Scale = this->GetCachedGeometry().GetAccumulatedLayoutTransform().GetScale();
-		FVector2D ModPosition = FVector2D(RenderCurrentPosition.X, RenderCurrentPosition.Y + CurrentSize.Y);
-
-		FVector2D PixelPosition;
-		FVector2D ViewportPosition;
-		USlateBlueprintLibrary::AbsoluteToViewport(
-			GetWorld(),
-			ModPosition,
-			PixelPosition, ViewportPosition);
-		UE_LOG(LogTemp, Warning, TEXT("CurrentSize X: %f, CurrentSize Y: %f"), CurrentSize.X, CurrentSize.Y);
-		UE_LOG(LogTemp, Warning, TEXT("CurrentSize X: %s"),* GetParent()->GetParent()->GetName());
-
-		FVector2D FinalViewportPosition = ViewportPosition;
-
-		WidgetInstance->AddToViewport(1);
-		WidgetInstance->SetPositionInViewport(FinalViewportPosition, false);
-		WidgetInstance->SetDesiredSizeInViewport(FVector2D(
-			(CurrentSize.X),
-			(CountParts.Num() > 0? CurrentSize.Y + 50 : CurrentSize.Y ) 
-		));
 		
-
 		LinkedWeaponPartListWidget = WidgetInstance;
-
-		/*// Проверка после небольшой задержки
-		FTimerHandle TimerHandle;
-		GetWorld()->GetTimerManager().SetTimer(
-			TimerHandle,
-			FTimerDelegate::CreateLambda([WidgetInstance]()
-			{
-				FVector2D ResultPosition2 = WidgetInstance->GetCachedGeometry().GetAbsolutePositionAtCoordinates(FVector2D(0, 0));
-				UE_LOG(LogTemp, Warning, TEXT("ResultPosition X: %f, ResultPosition Y: %f"), ResultPosition2.X, ResultPosition2.Y);
-
-				FVector2D Size2 = WidgetInstance->GetCachedGeometry().GetAbsoluteSize();
-				UE_LOG(LogTemp, Warning, TEXT("Size2 X: %f, Size2 Y: %f"), Size2.X, Size2.Y);
-			}),
-			0.2f, // Задержка перед проверкой
-			false
-		);*/
+		return WidgetInstance;
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to create WeaponPartListWidget!"));
+		return nullptr;
 	}
 }
 

@@ -43,13 +43,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateVisual();
 
+	UFUNCTION()
+	UWeaponPartListWidget* CreateWeaponPartListWidget();
+
 	// Getters
+	UItemPartIconWidget* GetMainItemIconWidget() {return MainItemIconWidget; }
 	UWeaponPartListWidget* GetPartListWidget() {return LinkedWeaponPartListWidget;}
+	USC_WeaponPartAttachmentPoint* GetTargetMarkerLinked() {return TargetMarkerLinked;}
 
 	//Setters
 	void SetWidgetTable(UDataTable* NewDataTable) { WidgetTable = NewDataTable;	}
 	void SetTargetMarkerLinked(USC_WeaponPartAttachmentPoint* NewWeaponPartAttachmentPoint) {TargetMarkerLinked =NewWeaponPartAttachmentPoint; }
 	void SetWidgetWeaponPartType(FWeaponPartTypeProperties NewWeaponPartTypeProperties) {WidgetWeaponPartType = NewWeaponPartTypeProperties;}
+	void SetBrushTargetPoint(FVector2D NewBrushTargetPoint) { BrushTargetPoint = NewBrushTargetPoint; }
 
 protected:
 	//====================================================================
@@ -77,6 +83,8 @@ protected:
 	TObjectPtr<USlateBrushAsset> BrushTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D BrushTargetPoint;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D BrushTargetSize = FVector2D(16.0f, 16.0f);
 
 	//====================================================================
 	// FUNCTIONS
@@ -88,10 +96,8 @@ protected:
 	void ListButtonClick();
 	UFUNCTION()
 	void PartClicked(UItemPartIconWidget* ItemPartIconWidget);
-	UFUNCTION()
-	void CreateWeaponPartListWidget();
+	
 	
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 };
