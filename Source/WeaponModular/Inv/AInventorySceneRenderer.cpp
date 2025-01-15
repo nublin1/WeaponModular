@@ -59,8 +59,6 @@ void AInventorySceneRenderer::RotateObject(FVector2D Delta)
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	FRotator NewRotation = GetActorRotation();
 	NewRotation.Yaw += Delta.X * RotationSpeed * DeltaTime; 
-	//NewRotation.Roll -= Delta.Y * RotationSpeed * DeltaTime;
-	//NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -80.0f, 80.0f);
 
 	if (ChildComponent)
 		if (ChildComponent->GetChildActor())

@@ -36,7 +36,7 @@ struct FItemsWidgetSlot
 	UPROPERTY()
 	FVector2D SlotPosition;
 	UPROPERTY()
-	bool bIsAvaiable = true;
+	UItemPartWidget* ItemPartWidgetLinked = nullptr;
 };
 
 UCLASS()
@@ -58,6 +58,8 @@ public:
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+	UFUNCTION(BlueprintCallable)
+	void InitializeWidgetPositions();
 	UFUNCTION(BlueprintCallable)
 	void RecalculateLinesToDraw();
 	UFUNCTION(BlueprintCallable)
@@ -97,6 +99,10 @@ protected:
 	TArray<FItemsWidgetSlot> ItemsWidgetPositions;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EWidgetsMethodLocation WidgetsMethodLocation = EWidgetsMethodLocation::Oval;
+
+	// Rotation
+	float RotationAngle = 0.0f;
+	float RotationSpeed = 35.0f;
 	
 
 	//====================================================================
@@ -123,6 +129,11 @@ protected:
 
 	UFUNCTION()
 	void ListButtonClick(UItemPartWidget* FromWidget);
+	UFUNCTION()
+	void UpdateWidgetsPositions();
+	UFUNCTION()
+	FVector2D Calculate3DRotationPosition( float Radius, float AngleOffset, float& OutDepth, FVector2D& BasePosition);
+	
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

@@ -50,6 +50,21 @@ void UInventoryItemSlotWidget::NativeConstruct()
 	}
 }
 
+void UInventoryItemSlotWidget::InitializeWidgetPositions()
+{
+	ItemsWidgetPositions.Empty();
+	for (auto ItemPartWidget : PartWidgets)
+	{
+		if (UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(ItemPartWidget->Slot))
+		{
+			FItemsWidgetSlot ItemsWidgetSlot;
+			ItemsWidgetSlot.SlotPosition = CanvasPanelSlot->GetPosition();
+			ItemsWidgetSlot.ItemPartWidgetLinked = ItemPartWidget;
+			ItemsWidgetPositions.Add(ItemsWidgetSlot);
+		}
+	}
+}
+
 void UInventoryItemSlotWidget::RecalculateLinesToDraw()
 {
 	if (!WBP_LineDrawer)
@@ -77,7 +92,7 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 			CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
 			CanvasSlot->SetAutoSize(true);
 				
-			ItemsWidgetPositions[Index].bIsAvaiable = false;
+			ItemsWidgetPositions[Index].ItemPartWidgetLinked = NewItemWidget;
 			NewItemWidget->SetTargetMarkerLinked(AttachmentPoint);
 			NewItemWidget->SetWidgetTable(static_cast<UDataTable*>(AttachmentPoint->GetUsableTable()));
 			NewItemWidget->SetWidgetWeaponPartType(AttachmentPoint->WeaponPointType);
@@ -218,7 +233,7 @@ int32 UInventoryItemSlotWidget::FindIndexOfClosestAvaiableWidgetPosition(FVector
 	for (int32 i = 0; i < ItemsWidgetPositions.Num(); ++i)
 	{
 		float Distance = FVector2D::Distance(ComparedPosition, ItemsWidgetPositions[i].SlotPosition);
-		if (Distance < ClosestDistance &&  ItemsWidgetPositions[i].bIsAvaiable == true)
+		if (Distance < ClosestDistance &&  ItemsWidgetPositions[i].ItemPartWidgetLinked == nullptr)
 		{
 			ClosestDistance = Distance;
 			Index = i;
@@ -298,11 +313,54 @@ void UInventoryItemSlotWidget::ListButtonClick(UItemPartWidget* FromWidget)
 	}
 }
 
+void UInventoryItemSlotWidget::UpdateWidgetsPositions()
+{
+	const FVector2D WidgetSize = GetCachedGeometry().GetLocalSize();
+	const FVector2D Center(WidgetSize.X / 2.0f, WidgetSize.Y / 2.0f);
+	
+	for (int32 i = 0; i < ItemsWidgetPositions.Num(); ++i)
+	{
+		if (!ItemsWidgetPositions[i].ItemPartWidgetLinked)
+			continue;
+		
+		if  (UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(ItemsWidgetPositions[i].ItemPartWidgetLinked->Slot))
+		{
+			FVector2D BasePosition = ItemsWidgetPositions[i].SlotPosition;
+			
+			float DepthFactor = 0.0f;
+			float Radius = FMath::Abs(Center.X - BasePosition.X); 
+			
+			FVector2D NewPosition = Calculate3DRotationPosition( Radius, RotationAngle, DepthFactor, BasePosition);
+			
+			float ScaleFactor = FMath::Lerp(0.5f, 1.0f, (DepthFactor + 1.0f) / 2.0f);
+			//UE_LOG(LogTemp, Warning, TEXT("ScaleFactor: %f"), ScaleFactor);
+
+			CanvasPanelSlot->SetPosition(NewPosition);
+			ItemsWidgetPositions[i].ItemPartWidgetLinked->SetDesiredSizeInViewport(ItemsWidgetPositions[i].SlotPosition * FVector2D(ScaleFactor, ScaleFactor));
+			//CanvasPanelSlot->SetSize(ItemsWidgetPositions[i].SlotPosition * FVector2D(ScaleFactor, ScaleFactor));
+			
+			int32 DepthZOrder = FMath::RoundToInt((DepthFactor + 1.0f) * 100.0f);
+			//PartWidgets[i]->SetZOrder(DepthZOrder);
+		}
+	}
+}
+
+FVector2D UInventoryItemSlotWidget::Calculate3DRotationPosition(float Radius, float AngleOffset, float& OutDepth, FVector2D& BasePosition)
+{
+	float Radians = FMath::DegreesToRadians(AngleOffset);
+	float OffsetX = Radius * FMath::Cos(Radians);
+
+	//Depth (Z axis) for perspective
+	OutDepth = FMath::Sin(Radians); // Value from -1.0 (background) to 1.0 (foreground)
+	
+	return FVector2D(BasePosition.X + Radius - OffsetX, BasePosition.Y);
+}
+
 void UInventoryItemSlotWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	RecalculateLinesToDraw();
+	
+    RecalculateLinesToDraw(); 
 }
 
 FReply UInventoryItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -344,8 +402,13 @@ FReply UInventoryItemSlotWidget::NativeOnMouseMove(const FGeometry& InGeometry, 
 		if (OnMouseMoveDelta.IsBound())
 		{
 			OnMouseMoveDelta.Broadcast(Delta);
-			
 		}
+
+		float DeltaTime = GetWorld()->GetDeltaSeconds();
+		RotationAngle += Delta.X * RotationSpeed * DeltaTime;
+		RotationAngle = FMath::Fmod(RotationAngle, 360.0f);
+
+		UpdateWidgetsPositions();
 	}
 
 	if (!HasMouseCapture())
