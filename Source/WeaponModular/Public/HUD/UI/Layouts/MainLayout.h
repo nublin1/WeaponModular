@@ -16,7 +16,7 @@ class WEAPONMODULAR_API UMainLayout : public UBUIUserWidget
 	GENERATED_BODY()
 
 
-protected:
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Layout")
 	TObjectPtr<UWeaponLayout> WeaponLayout;
 };

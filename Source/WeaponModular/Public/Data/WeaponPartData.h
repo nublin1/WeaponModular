@@ -95,7 +95,7 @@ public:
 	                                                       uint8 SpecificTypeValue);
 
 	UFUNCTION(BlueprintCallable)
-	static bool AreWeaponPartPropertiesEqual(UDataTable* DataTable, FWeaponPartTypeProperties WeaponPartTypeProperties, FWeaponPartTypeProperties RowName2);
+	static bool AreWeaponPartPropertiesEqual(FWeaponPartTypeProperties WeaponPartTypeProperties, FWeaponPartTypeProperties RowName2);
 };
 
 inline TArray<FWeaponPartData> UWeaponPartDataUtilities::GetSpecificWeaponParts(UDataTable* DataTable,
@@ -138,15 +138,8 @@ inline TArray<FWeaponPartData> UWeaponPartDataUtilities::GetSpecificWeaponParts(
 	return MatchingParts;
 }
 
-inline bool UWeaponPartDataUtilities::AreWeaponPartPropertiesEqual(UDataTable* DataTable, FWeaponPartTypeProperties WeaponPartTypeProperties, FWeaponPartTypeProperties RowName2)
+inline bool UWeaponPartDataUtilities::AreWeaponPartPropertiesEqual(FWeaponPartTypeProperties WeaponPartTypeProperties, FWeaponPartTypeProperties RowName2)
 {
-	if (!DataTable)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DataTable is null!"));
-		return false;
-	}
-	
-	
 	if (WeaponPartTypeProperties.WeaponPartType != RowName2.WeaponPartType)
 	{
 		return false;

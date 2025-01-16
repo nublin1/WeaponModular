@@ -13,7 +13,6 @@
 class UImage;
 
 
-
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class WEAPONMODULAR_API USC_WeaponPartAttachmentPoint : public USceneComponent
 {

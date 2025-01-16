@@ -7,6 +7,7 @@
 #include "Utilities/UtilitiesRender.h"
 #include "InventoryItemSlotWidget.generated.h"
 
+class UScaleBox;
 class USC_WeaponPartAttachmentPoint;
 class ULineDrawerWidget;
 class UImage;
@@ -40,7 +41,7 @@ struct FItemsWidgetSlot
 };
 
 UCLASS()
-class WEAPONMODULAR_API UInventoryItemSlotWidget   : public UBUIUserWidget
+class WEAPONMODULAR_API UInventoryItemSlotWidget : public UBUIUserWidget
 {
 	GENERATED_BODY()
 	
@@ -63,15 +64,37 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RecalculateLinesToDraw();
 	UFUNCTION(BlueprintCallable)
+	void ComparisonAndUpdateItemPartWidget(UItemPartWidget* Widget, USC_WeaponPartAttachmentPoint* AttachmentPoint);
+	UFUNCTION(BlueprintCallable)
 	void AddItemPartWidget (USC_WeaponPartAttachmentPoint* AttachmentPoint);
+	UFUNCTION(BlueprintCallable)
+	void CalculateItemSlotPositions();
+
+	// Getters
+	UFUNCTION(BlueprintCallable)
+	TArray<FVector2D> GetItemsWidgetPositions() {
+		TArray<FVector2D> Result;
+		for (auto Element : ItemsWidgetPositions)
+		{
+			Result.Add(Element.SlotPosition);
+		}
+		return Result;
+	}
+	
+	// Setters
+	void SetRenderTargetMaterial(UTextureRenderTarget2D* RenderTarget);
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
 	// Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
 	TObjectPtr<UCanvasPanel> MainCanvas;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UCanvasPanel> ContentPanel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
+	TObjectPtr<UScaleBox> ScaleBox;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UImage> RT_Image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
@@ -79,8 +102,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
 	TArray<TObjectPtr<UItemPartWidget>> PartWidgets;
 
+	// Classes
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
 	TSubclassOf<UItemPartWidget> ItemPartWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UMaterialInterface> RenderTargetMaterial;
 
 	// Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -110,8 +136,7 @@ protected:
 	//====================================================================
 	virtual void NativeConstruct() override;
 
-	UFUNCTION(BlueprintCallable)
-	void CalculateItemSlotPositions();
+	
 	UFUNCTION()
 	FVector2D CalculateOvalPosition(int32 Index, const FVector2D& Center, float OvalWidth, float OvalHeight);
 	UFUNCTION()

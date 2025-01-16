@@ -9,10 +9,11 @@
 #include "Components/CanvasPanelSlot.h"
 #include "Components/PanelWidget.h"
 #include "Components/ScrollBox.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "Helpers/SC_WeaponPartAttachmentPoint.h"
 #include "HUD/UI/Slots/ItemPartWidget.h"
 #include "HUD/UI/Slots/LineDrawerWidget.h"
-#include "Materials/MaterialExpressionSceneColor.h"
+
 
 
 void UInventoryItemSlotWidget::NativeConstruct()
@@ -39,9 +40,9 @@ void UInventoryItemSlotWidget::NativeConstruct()
 		}
 	};
 
-	if (MainCanvas)
+	if (ContentPanel)
 	{
-		GatherChildWidgets(MainCanvas.Get(), ItemPartWidgets);
+		GatherChildWidgets(ContentPanel.Get(), ItemPartWidgets);
 	}
 
 	if (ItemPartWidgets.Num() > 0)
@@ -76,6 +77,24 @@ void UInventoryItemSlotWidget::RecalculateLinesToDraw()
 	}
 }
 
+void UInventoryItemSlotWidget::ComparisonAndUpdateItemPartWidget(UItemPartWidget* Widget,
+	USC_WeaponPartAttachmentPoint* AttachmentPoint)
+{
+	if (!Widget || !AttachmentPoint)
+		return;
+
+	bool Result = UWeaponPartDataUtilities::AreWeaponPartPropertiesEqual(
+		Widget->GetWidgetWeaponPartType(),
+		AttachmentPoint->WeaponPointType
+	);
+
+	if (!Result)
+		return;
+
+	Widget->SetTargetMarkerLinked(AttachmentPoint);
+	Widget->UpdateVisual();
+}
+
 void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* AttachmentPoint)
 {
 	auto PosInScreen = CalculateCoordinates(CaptureComponent, AttachmentPoint->GetComponentLocation());
@@ -85,7 +104,7 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 
 	if (TObjectPtr<UItemPartWidget> NewItemWidget = CreateItemPartWidget())
 	{
-		TObjectPtr<UCanvasPanelSlot> CanvasSlot = MainCanvas->AddChildToCanvas(NewItemWidget);
+		TObjectPtr<UCanvasPanelSlot> CanvasSlot = ContentPanel->AddChildToCanvas(NewItemWidget);
 		if (CanvasSlot)
 		{
 			CanvasSlot->SetPosition(ItemsWidgetPositions[Index].SlotPosition);
@@ -147,6 +166,41 @@ void UInventoryItemSlotWidget::CalculateItemSlotPositions()
 	}
 }
 
+void UInventoryItemSlotWidget::SetRenderTargetMaterial(UTextureRenderTarget2D* RenderTarget)
+{
+	if (!RenderTargetMaterial) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Base material is null!"));
+		return;
+	}
+
+	if (!RenderTarget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("RenderTarget is null!"));
+		return;
+	}
+	
+	UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(RenderTargetMaterial, this);
+	if (!DynamicMaterial)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to create dynamic material!"));
+		return;
+	}
+	
+	DynamicMaterial->SetTextureParameterValue(FName("RenderTarget"), RenderTarget);
+	RT_Image->SetBrushFromMaterial(DynamicMaterial);
+
+	UE_LOG(LogTemp, Warning, TEXT("size X: %f size Y: %f"), GetCachedGeometry().GetLocalSize().X , GetCachedGeometry().GetLocalSize().Y);
+	UE_LOG(LogTemp, Warning, TEXT("size X: %i size Y: %i"), RenderTarget->SizeX ,RenderTarget->SizeY);
+
+	//RT_Image->SetDesiredSizeOverride(FVector2D(RenderTarget->SizeX, RenderTarget->SizeY));
+	if(auto res =  Cast<UCanvasPanelSlot>(RT_Image->Slot))
+	{
+		res->SetSize(FVector2D(RenderTarget->SizeX, RenderTarget->SizeY));
+	}
+	
+}
+
 FVector2D UInventoryItemSlotWidget::CalculateOvalPosition(int32 Index, const FVector2D& Center,
                                                           float OvalWidth, float OvalHeight)
 {
@@ -156,7 +210,7 @@ FVector2D UInventoryItemSlotWidget::CalculateOvalPosition(int32 Index, const FVe
 	float PerspectiveFactor = 1.0f + 0.2f * FMath::Abs(FMath::Sin(Angle));
 
 	//return FVector2D(X, Y);
-	return FVector2D(X, Y * PerspectiveFactor);
+	return FVector2D(X, Y + PerspectiveFactor);
 }
 
 FVector2D UInventoryItemSlotWidget::CalculateSquarePosition(int32 Index, const FVector2D& Center,
@@ -272,7 +326,7 @@ void UInventoryItemSlotWidget::CalculateLineToDraw(UItemPartWidget* ItemPartWidg
 			auto Size = ItemPartWidget->GetMainItemIconWidget()->GetCachedGeometry().GetLocalSize();
 			auto StartPoint = Position + FVector2D(Size.X / 2.0f, Size.Y / 2.0f);
 			auto EndPoint= CalculateCoordinates(CaptureComponent, AttachPoint->GetComponentLocation());
-
+			
 			ItemPartWidget->SetBrushTargetPoint(EndPoint);
 			WBP_LineDrawer->AddLineToDraw(Name, StartPoint, EndPoint);
 
@@ -293,7 +347,7 @@ void UInventoryItemSlotWidget::ListButtonClick(UItemPartWidget* FromWidget)
 		FVector2D ModPosition = FVector2D(RenderCurrentPosition.X, RenderCurrentPosition.Y + LocalSize.Y);
 		FVector2D ScrollSize = ListWidget->GetWeaponPartList_ScrollBox()->GetScrollbarThickness();
 
-		if (TObjectPtr<UCanvasPanelSlot> ListWidgetCanvasSlot = MainCanvas->AddChildToCanvas(ListWidget))
+		if (TObjectPtr<UCanvasPanelSlot> ListWidgetCanvasSlot = ContentPanel->AddChildToCanvas(ListWidget))
 		{
 			ListWidgetCanvasSlot->SetPosition(ModPosition);
 			ListWidgetCanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
@@ -336,7 +390,7 @@ void UInventoryItemSlotWidget::UpdateWidgetsPositions()
 			//UE_LOG(LogTemp, Warning, TEXT("ScaleFactor: %f"), ScaleFactor);
 
 			CanvasPanelSlot->SetPosition(NewPosition);
-			ItemsWidgetPositions[i].ItemPartWidgetLinked->SetDesiredSizeInViewport(ItemsWidgetPositions[i].SlotPosition * FVector2D(ScaleFactor, ScaleFactor));
+			//ItemsWidgetPositions[i].ItemPartWidgetLinked->SetDesiredSizeInViewport(ItemsWidgetPositions[i].SlotPosition * FVector2D(ScaleFactor, ScaleFactor));
 			//CanvasPanelSlot->SetSize(ItemsWidgetPositions[i].SlotPosition * FVector2D(ScaleFactor, ScaleFactor));
 			
 			int32 DepthZOrder = FMath::RoundToInt((DepthFactor + 1.0f) * 100.0f);

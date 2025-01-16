@@ -18,11 +18,17 @@ public:
 	AWeapon();
 
 protected:
+	//====================================================================
+	// PROPERTIES AND VARIABLES
+	//====================================================================
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TArray<TObjectPtr<USC_WeaponPartAttachmentPoint>> WeaponMarkers;
 
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
 	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void BeginPlay() override;
 

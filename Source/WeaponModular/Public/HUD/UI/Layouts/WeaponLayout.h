@@ -17,7 +17,10 @@ class WEAPONMODULAR_API UWeaponLayout : public UBUIUserWidget
 	GENERATED_BODY()
 
 public:
-
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
+	void AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInventoryItemSlotsWidget );
 
 protected:
 	//====================================================================
@@ -25,10 +28,11 @@ protected:
 	//====================================================================
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> MainCanvasPanel;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UCanvasPanel> ContentPanel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TObjectPtr<UInventoryItemSlotWidget>> UInventoryItemSlotsWidgets;
 
-	
 
 	//====================================================================
 	// FUNCTIONS

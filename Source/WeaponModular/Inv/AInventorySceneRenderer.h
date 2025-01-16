@@ -13,8 +13,18 @@ class WEAPONMODULAR_API AInventorySceneRenderer : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
+public:
+	//====================================================================
+	// PROPERTIES AND VARIABLES
+	//====================================================================
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<USceneCaptureComponent2D> CaptureComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UChildActorComponent> ChildComponent;
+	
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
 	AInventorySceneRenderer();
 	virtual void OnConstruction(const FTransform& Transform) override;
 
@@ -22,11 +32,9 @@ public:
 	void UpdateVisibleComponents();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<USceneCaptureComponent2D> CaptureComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UChildActorComponent> ChildComponent;
-	
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable)

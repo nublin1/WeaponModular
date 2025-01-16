@@ -17,8 +17,11 @@ AWeapon::AWeapon()
 void AWeapon::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
-
 	
+	TArray<USC_WeaponPartAttachmentPoint*> Components;
+	GetComponents<USC_WeaponPartAttachmentPoint>(Components);
+
+	WeaponMarkers = Components;
 }
 
 void AWeapon::BeginPlay()

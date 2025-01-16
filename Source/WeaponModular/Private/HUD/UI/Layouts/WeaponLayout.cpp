@@ -5,8 +5,10 @@
 
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
+#include "Components/CanvasPanelSlot.h"
 #include "Components/PanelWidget.h"
 #include "HUD/UI/Slots/InventoryItemSlotWidget.h"
+
 
 void UWeaponLayout::NativeConstruct()
 {
@@ -37,4 +39,30 @@ void UWeaponLayout::NativeConstruct()
 
 	if (ItemPartWidgets.Num()>0)
 		UInventoryItemSlotsWidgets = ItemPartWidgets;
+}
+
+void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInventoryItemSlotsWidget)
+{
+	auto PanelSlot = ContentPanel->AddChild(NewInventoryItemSlotsWidget);
+	if (UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(PanelSlot))
+	{
+		// Устанавливаем якоря на весь холст
+		CanvasSlot->SetAnchors(FAnchors(0.0f, 0.0f, 1.0f, 1.0f));
+		CanvasSlot->SetOffsets(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
+		CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+
+		FTimerHandle TimerHandle;
+		GetWorld()->GetTimerManager().SetTimer(
+			TimerHandle, 
+			[this, NewInventoryItemSlotsWidget ]()
+			{
+				NewInventoryItemSlotsWidget->CalculateItemSlotPositions();
+			
+			},
+			0.1f, 
+			false 
+		);
+	}
+	
+	UInventoryItemSlotsWidgets.Add(NewInventoryItemSlotsWidget);
 }

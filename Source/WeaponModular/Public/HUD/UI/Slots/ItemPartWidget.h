@@ -6,6 +6,7 @@
 #include "ItemPartIconWidget.h"
 #include "Data/WeaponPartData.h"
 #include "WeaponPartListWidget.h"
+#include "Slate/SlateBrushAsset.h"
 #include "WeaponModular/Public/HUD/UI/BUIUserWidget.h"
 #include "ItemPartWidget.generated.h"
 
@@ -47,15 +48,18 @@ public:
 	UWeaponPartListWidget* CreateWeaponPartListWidget();
 
 	// Getters
+	UDataTable* GetWidgetTable() {return WidgetTable;}
 	UItemPartIconWidget* GetMainItemIconWidget() {return MainItemIconWidget; }
 	UWeaponPartListWidget* GetPartListWidget() {return LinkedWeaponPartListWidget;}
 	USC_WeaponPartAttachmentPoint* GetTargetMarkerLinked() {return TargetMarkerLinked;}
+	FWeaponPartTypeProperties GetWidgetWeaponPartType() {return WidgetWeaponPartType;}
 
 	//Setters
 	void SetWidgetTable(UDataTable* NewDataTable) { WidgetTable = NewDataTable;	}
 	void SetTargetMarkerLinked(USC_WeaponPartAttachmentPoint* NewWeaponPartAttachmentPoint) {TargetMarkerLinked =NewWeaponPartAttachmentPoint; }
 	void SetWidgetWeaponPartType(FWeaponPartTypeProperties NewWeaponPartTypeProperties) {WidgetWeaponPartType = NewWeaponPartTypeProperties;}
 	void SetBrushTargetPoint(FVector2D NewBrushTargetPoint) { BrushTargetPoint = NewBrushTargetPoint; }
+	void SetBrushTexture(USlateBrushAsset* NewBrushTexture) { BrushTexture = NewBrushTexture; }
 
 protected:
 	//====================================================================
