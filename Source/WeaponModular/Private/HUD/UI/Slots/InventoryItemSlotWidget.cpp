@@ -189,14 +189,9 @@ void UInventoryItemSlotWidget::SetRenderTargetMaterial(UTextureRenderTarget2D* R
 	
 	DynamicMaterial->SetTextureParameterValue(FName("RenderTarget"), RenderTarget);
 	RT_Image->SetBrushFromMaterial(DynamicMaterial);
-
-	UE_LOG(LogTemp, Warning, TEXT("size X: %f size Y: %f"), GetCachedGeometry().GetLocalSize().X , GetCachedGeometry().GetLocalSize().Y);
-	UE_LOG(LogTemp, Warning, TEXT("size X: %i size Y: %i"), RenderTarget->SizeX ,RenderTarget->SizeY);
-
-	//RT_Image->SetDesiredSizeOverride(FVector2D(RenderTarget->SizeX, RenderTarget->SizeY));
-	if(auto res =  Cast<UCanvasPanelSlot>(RT_Image->Slot))
+	if(auto RT_ImagePanelSlot =  Cast<UCanvasPanelSlot>(RT_Image->Slot))
 	{
-		res->SetSize(FVector2D(RenderTarget->SizeX, RenderTarget->SizeY));
+		RT_ImagePanelSlot->SetSize(FVector2D(RenderTarget->SizeX, RenderTarget->SizeY));
 	}
 	
 }

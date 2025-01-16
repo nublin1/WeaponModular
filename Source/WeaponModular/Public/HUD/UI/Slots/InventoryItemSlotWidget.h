@@ -93,8 +93,6 @@ protected:
 	TObjectPtr<UCanvasPanel> MainCanvas;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> ContentPanel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
-	TObjectPtr<UScaleBox> ScaleBox;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UImage> RT_Image;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
@@ -119,11 +117,11 @@ protected:
 	TArray<FVector2D> BoxesToDraw;
 
 	// ItemWidgets data
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
 	int32 TotalItemWidgets = 12;
 	UPROPERTY()
 	TArray<FItemsWidgetSlot> ItemsWidgetPositions;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
 	EWidgetsMethodLocation WidgetsMethodLocation = EWidgetsMethodLocation::Oval;
 
 	// Rotation
