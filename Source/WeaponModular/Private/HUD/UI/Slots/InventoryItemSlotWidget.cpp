@@ -127,11 +127,24 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 	}
 }
 
-void UInventoryItemSlotWidget::CalculateItemSlotPositions()
+void UInventoryItemSlotWidget::CalculateItemSlotPositions(FVector2D size)
 {
-	const FVector2D WidgetSize = GetCachedGeometry().GetLocalSize();
-	const FVector2D Center(WidgetSize.X / 2.0f, WidgetSize.Y / 2.0f);
+	if (PartWidgets.Num() > 0)
+	{
+		return;
+	}
 
+	FVector2D WidgetSize;
+
+	if (size.IsZero())
+		WidgetSize =  GetCachedGeometry().GetLocalSize();
+	else
+	{
+		WidgetSize = size;
+	}
+	
+	const FVector2D Center(WidgetSize.X / 2.0f, WidgetSize.Y / 2.0f);
+	UE_LOG(LogTemp, Warning, TEXT("WidgetSize: %f"), WidgetSize.X);
 	for (int32 i = 0; i < TotalItemWidgets; ++i)
 	{
 		FVector2D Position;
@@ -408,6 +421,12 @@ FVector2D UInventoryItemSlotWidget::Calculate3DRotationPosition(float Radius, fl
 void UInventoryItemSlotWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
 	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	if (!bIsGeometryReady && !MyGeometry.GetAbsolutePosition().IsZero()  && !MyGeometry.GetLocalSize().IsZero())
+	{
+		bIsGeometryReady = true;
+		GeometryReady();
+	}
 	
     RecalculateLinesToDraw(); 
 }
@@ -495,3 +514,4 @@ FReply UInventoryItemSlotWidget::NativeOnMouseWheel(const FGeometry& InGeometry,
 	
 	return Reply;
 }
+

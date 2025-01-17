@@ -52,6 +52,8 @@ void UItemPartWidget::PartClicked(UItemPartIconWidget* ItemPartIconWidget)
 
 	auto Result = LinkedWeaponPartListWidget->GetItemPartIconToWeaponPartMap().Find(ItemPartIconWidget);
 
+	if (!TargetMarkerLinked)
+		return;
 	TargetMarkerLinked->SetRetrievedWeaponPartData(Result);
 	TargetMarkerLinked->UpdateStaticMeshComponent();
 

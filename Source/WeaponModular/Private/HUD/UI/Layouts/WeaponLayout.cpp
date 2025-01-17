@@ -57,19 +57,40 @@ void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInv
 		ScaleBoxSlot->SetOffsets(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
 		ScaleBoxSlot->SetAlignment(FVector2D(0.0f, 0.0f));
 		ScaleBoxSlot->SetAutoSize(true);
+		
 	}
 	
 	auto Box = ScaleBox->AddChild(NewInventoryItemSlotsWidget);
-	FTimerHandle TimerHandle;
+	if (!Box)
+		return;
+	
+	FTimerHandle& TimerHandle = ActiveTimers.FindOrAdd(NewInventoryItemSlotsWidget);
+
+	// Запускаем таймер
 	GetWorld()->GetTimerManager().SetTimer(
 		TimerHandle,
-		[this, NewInventoryItemSlotsWidget]()
+		[this, NewInventoryItemSlotsWidget, ScaleBox]()
 		{
-			NewInventoryItemSlotsWidget->CalculateItemSlotPositions();
+			if (!NewInventoryItemSlotsWidget->GetCachedGeometry().Size.IsZero())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("WidgetXXXXSize: %f"), NewInventoryItemSlotsWidget->GetCachedGeometry().Size.X);
+				
+				NewInventoryItemSlotsWidget->CalculateItemSlotPositions(NewInventoryItemSlotsWidget->GetCachedGeometry().Size);
+				ScaleBox->SetVisibility(ESlateVisibility::Collapsed);
+				
+				FTimerHandle* FoundHandle = ActiveTimers.Find(NewInventoryItemSlotsWidget);
+				if (FoundHandle)
+				{
+					GetWorld()->GetTimerManager().ClearTimer(*FoundHandle);
+					ActiveTimers.Remove(NewInventoryItemSlotsWidget);
+				}
+			}
 		},
-		0.1f,
-		false
+		0.1f, 
+		true  
 	);
+
 	
+
 	UInventoryItemSlotsWidgets.Add(NewInventoryItemSlotsWidget);
 }

@@ -31,6 +31,13 @@ void AInventorySceneRenderer::OnConstruction(const FTransform& Transform)
 	Super::OnConstruction(Transform);
 }
 
+void AInventorySceneRenderer::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UpdateVisibleComponents();
+ }
+
 void AInventorySceneRenderer::UpdateVisibleComponents()
 {
 	if (!ChildComponent || !CaptureComponent)
@@ -44,13 +51,6 @@ void AInventorySceneRenderer::UpdateVisibleComponents()
 	CaptureComponent->ShowOnlyActors.Reset();
 	CaptureComponent->ShowOnlyActors.Add(ChildActor);
 	//CaptureComponent->ShowOnlyActorComponents(ChildActor, true);
-}
-
-void AInventorySceneRenderer::BeginPlay()
-{
-	Super::BeginPlay();
-
-	UpdateVisibleComponents();
 }
 
 void AInventorySceneRenderer::RotateObject(FVector2D Delta)

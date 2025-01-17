@@ -33,6 +33,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<TObjectPtr<UInventoryItemSlotWidget>> UInventoryItemSlotsWidgets;
 
+	// Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int CurrentChildIndexVisible = 0;
+
+	TMap<UInventoryItemSlotWidget*, FTimerHandle> ActiveTimers;
 
 	//====================================================================
 	// FUNCTIONS

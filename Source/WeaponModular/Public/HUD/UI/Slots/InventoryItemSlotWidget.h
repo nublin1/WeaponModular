@@ -68,7 +68,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void AddItemPartWidget (USC_WeaponPartAttachmentPoint* AttachmentPoint);
 	UFUNCTION(BlueprintCallable)
-	void CalculateItemSlotPositions();
+	void CalculateItemSlotPositions(FVector2D size = FVector2D::ZeroVector);
 
 	// Getters
 	UFUNCTION(BlueprintCallable)
@@ -163,6 +163,7 @@ protected:
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseWheel(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-	
+
+
 };
 	
