@@ -43,8 +43,6 @@ void APC_ModularWeapon::ProcessWeaponTable()
 			SpawnInventorySceneRenderers(WData);
 		}
 	}
-
-	MainHUDContainer->WeaponLayout->ContentPanel->GetChildAt(0)->SetVisibility(ESlateVisibility::Visible);
 }
 
 void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)

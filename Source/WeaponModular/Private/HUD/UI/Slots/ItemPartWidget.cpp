@@ -22,10 +22,12 @@ void UItemPartWidget::UpdateVisual()
 	if (!TargetMarkerLinked)
 		return;
 
+	BrushTexture = TargetMarkerLinked->GetBrushTexture();
+
 	auto RetrievedWeaponPartRow = TargetMarkerLinked->GetRetrievedWeaponPartData();
 	if (!RetrievedWeaponPartRow)
 	{
-		BrushTexture = nullptr;
+		
 		MainItemIconWidget->GetContent_Image()->SetBrushFromTexture(nullptr);
 		MainItemIconWidget->GetContent_Image()->SetOpacity(0.2f);
 		MainItemIconWidget->GetContent_Text_Name()->SetText(FText::FromString("Empty"));
