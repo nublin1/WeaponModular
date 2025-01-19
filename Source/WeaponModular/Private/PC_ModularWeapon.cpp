@@ -81,7 +81,7 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	}
 
 	RendererInstance->CaptureComponent->AddRelativeLocation(FVector(-50.0f, 0.0f, 0.0f));
-	RendererInstance->CaptureComponent->ProjectionType = ECameraProjectionMode::Type::Orthographic;
+	//RendererInstance->CaptureComponent->ProjectionType = ECameraProjectionMode::Type::Orthographic;
 	RendererInstance->CaptureComponent->OrthoWidth = 140.0f;
 	RendererInstance->CaptureComponent->TextureTarget = RenderTarget;
 

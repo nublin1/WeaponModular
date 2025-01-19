@@ -72,9 +72,7 @@ void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInv
 		[this, NewInventoryItemSlotsWidget, ScaleBox]()
 		{
 			if (!NewInventoryItemSlotsWidget->GetCachedGeometry().Size.IsZero())
-			{
-				UE_LOG(LogTemp, Warning, TEXT("WidgetXXXXSize: %f"), NewInventoryItemSlotsWidget->GetCachedGeometry().Size.X);
-				
+			{				
 				NewInventoryItemSlotsWidget->CalculateItemSlotPositions(NewInventoryItemSlotsWidget->GetCachedGeometry().Size);
 				ScaleBox->SetVisibility(ESlateVisibility::Collapsed);
 				

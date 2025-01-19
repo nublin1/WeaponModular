@@ -144,7 +144,6 @@ void UInventoryItemSlotWidget::CalculateItemSlotPositions(FVector2D size)
 	}
 	
 	const FVector2D Center(WidgetSize.X / 2.0f, WidgetSize.Y / 2.0f);
-	UE_LOG(LogTemp, Warning, TEXT("WidgetSize: %f"), WidgetSize.X);
 	for (int32 i = 0; i < TotalItemWidgets; ++i)
 	{
 		FVector2D Position;
@@ -254,7 +253,7 @@ FVector2D UInventoryItemSlotWidget::CalculateSquarePosition(int32 Index, const F
 }
 
 FVector2D UInventoryItemSlotWidget::CalculateCirclePosition(int32 Index, const FVector2D& Center, float Radius,
-	const FVector2D& ScreenSize)
+	const FVector2D& ScreenSize) const
 {
 	float MaxHorizontalRadius = ScreenSize.X / 2.0f * 0.9f; 
 	float MaxVerticalRadius = ScreenSize.Y / 2.0f * 0.9f;  
@@ -390,19 +389,19 @@ void UInventoryItemSlotWidget::UpdateWidgetsPositions()
 			FVector2D BasePosition = ItemsWidgetPositions[i].SlotPosition;
 			
 			float DepthFactor = 0.0f;
-			float Radius = FMath::Abs(Center.X - BasePosition.X); 
+			float Radius = (Center.X - BasePosition.X); 
 			
 			FVector2D NewPosition = Calculate3DRotationPosition( Radius, RotationAngle, DepthFactor, BasePosition);
 			
-			float ScaleFactor = FMath::Lerp(0.5f, 1.0f, (DepthFactor + 1.0f) / 2.0f);
+			//float ScaleFactor = FMath::Lerp(0.5f, 1.0f, (DepthFactor + 1.0f) / 2.0f);
 			//UE_LOG(LogTemp, Warning, TEXT("ScaleFactor: %f"), ScaleFactor);
 
 			CanvasPanelSlot->SetPosition(NewPosition);
-			//ItemsWidgetPositions[i].ItemPartWidgetLinked->SetDesiredSizeInViewport(ItemsWidgetPositions[i].SlotPosition * FVector2D(ScaleFactor, ScaleFactor));
-			//CanvasPanelSlot->SetSize(ItemsWidgetPositions[i].SlotPosition * FVector2D(ScaleFactor, ScaleFactor));
+			//ItemsWidgetPositions[i].ItemPartWidgetLinked->SetDesiredSizeInViewport(FVector2D(10.0f, 10.0f));
+			//CanvasPanelSlot->SetSize( FVector2D(10.0f, 10.0f));
 			
 			int32 DepthZOrder = FMath::RoundToInt((DepthFactor + 1.0f) * 100.0f);
-			//PartWidgets[i]->SetZOrder(DepthZOrder);
+			CanvasPanelSlot->SetZOrder(DepthZOrder);
 		}
 	}
 }
@@ -413,7 +412,7 @@ FVector2D UInventoryItemSlotWidget::Calculate3DRotationPosition(float Radius, fl
 	float OffsetX = Radius * FMath::Cos(Radians);
 
 	//Depth (Z axis) for perspective
-	OutDepth = FMath::Sin(Radians); // Value from -1.0 (background) to 1.0 (foreground)
+	OutDepth = FMath::Sin(Radians); // Value from -1.0 (background) to 1.0 (foreground)	
 	
 	return FVector2D(BasePosition.X + Radius - OffsetX, BasePosition.Y);
 }

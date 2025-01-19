@@ -140,7 +140,7 @@ protected:
 	UFUNCTION()
 	FVector2D CalculateSquarePosition(int32 Index,const FVector2D& Center, float SquareWidth, float SquareHeight);
 	UFUNCTION()
-	FVector2D CalculateCirclePosition(int32 Index, const FVector2D& Center, float Radius, const FVector2D& ScreenSize);
+	FVector2D CalculateCirclePosition(int32 Index, const FVector2D& Center, float Radius, const FVector2D& ScreenSize) const;
 	UFUNCTION()
 	UItemPartWidget* CreateItemPartWidget();
 	UFUNCTION()
