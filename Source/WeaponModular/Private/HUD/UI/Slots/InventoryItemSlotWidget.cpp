@@ -13,7 +13,7 @@
 #include "Helpers/SC_WeaponPartAttachmentPoint.h"
 #include "HUD/UI/Slots/ItemPartWidget.h"
 #include "HUD/UI/Slots/LineDrawerWidget.h"
-
+#include "Utilities/UtilitiesRender.h"
 
 
 void UInventoryItemSlotWidget::NativeConstruct()
@@ -434,7 +434,7 @@ FReply UInventoryItemSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeom
 {
 	FReply Reply = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 
-	if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
+	if (RotationSettings.bCanRotate && InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
 	{
 		bIsDragging = true;
 		LastMousePosition = InMouseEvent.GetScreenSpacePosition();
@@ -472,7 +472,7 @@ FReply UInventoryItemSlotWidget::NativeOnMouseMove(const FGeometry& InGeometry, 
 		}
 
 		float DeltaTime = GetWorld()->GetDeltaSeconds();
-		RotationAngle += Delta.X * RotationSpeed * DeltaTime;
+		RotationAngle += Delta.X * RotationSettings.RotationSpeed * DeltaTime;
 		RotationAngle = FMath::Fmod(RotationAngle, 360.0f);
 
 		UpdateWidgetsPositions();

@@ -55,10 +55,9 @@ void AInventorySceneRenderer::UpdateVisibleComponents()
 
 void AInventorySceneRenderer::RotateObject(FVector2D Delta)
 {
-	float RotationSpeed = 35.0f;
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
 	FRotator NewRotation = GetActorRotation();
-	NewRotation.Yaw += Delta.X * RotationSpeed * DeltaTime; 
+	NewRotation.Yaw += Delta.X * RotationSettings.RotationSpeed * DeltaTime; 
 
 	if (ChildComponent)
 		if (ChildComponent->GetChildActor())
@@ -70,14 +69,12 @@ void AInventorySceneRenderer::ZoomObject(float Delta)
 	if (!CaptureComponent)
 		return;
 
-	float ZoomSpeed = 10.0f;
-
 	if (CaptureComponent->ProjectionType.GetValue() == ECameraProjectionMode::Type::Orthographic)
 	{
 		float MinOrthoWidth = 50.0f;
 		float MaxOrthoWidth = 1000.0f;
 		
-		float NewOrthoWidth = CaptureComponent->OrthoWidth - Delta * ZoomSpeed;
+		float NewOrthoWidth = CaptureComponent->OrthoWidth - Delta * RotationSettings.ZoomSpeed;
 		NewOrthoWidth = FMath::Clamp(NewOrthoWidth, MinOrthoWidth, MaxOrthoWidth);
 		CaptureComponent->OrthoWidth = NewOrthoWidth;
 	}
@@ -88,7 +85,7 @@ void AInventorySceneRenderer::ZoomObject(float Delta)
 		float DeltaTime = GetWorld()->GetDeltaSeconds();
 
 		auto CurrentLocation = CaptureComponent->GetComponentLocation();
-		FVector NewLocation = CurrentLocation + CaptureComponent->GetForwardVector() * Delta * ZoomSpeed * DeltaTime;
+		FVector NewLocation = CurrentLocation + CaptureComponent->GetForwardVector() * Delta * RotationSettings.ZoomSpeed * DeltaTime;
 	
 		CaptureComponent->SetWorldLocation(NewLocation);
 	}

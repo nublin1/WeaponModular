@@ -17,11 +17,11 @@ void USC_WeaponPartAttachmentPoint::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StartingWeaponPartRow.DataTable || StartingWeaponPartRow.RowName.IsNone())
+	if (!InitialWeaponPartRow.DataTable || InitialWeaponPartRow.RowName.IsNone())
 		return;
 
-	if (FWeaponPartData* WData = StartingWeaponPartRow.DataTable->FindRow<FWeaponPartData>(
-		StartingWeaponPartRow.RowName, StartingWeaponPartRow.RowName.ToString()))
+	if (FWeaponPartData* WData = InitialWeaponPartRow.DataTable->FindRow<FWeaponPartData>(
+		InitialWeaponPartRow.RowName, InitialWeaponPartRow.RowName.ToString()))
 	{
 		RetrievedWeaponPartData = WData;
 		WeaponPointType = RetrievedWeaponPartData->BaseWeaponPartData.TypeProperties;

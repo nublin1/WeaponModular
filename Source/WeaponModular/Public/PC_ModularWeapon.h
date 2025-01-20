@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Settings/Settings.h"
 #include "PC_ModularWeapon.generated.h"
 
 class UInventoryItemSlotWidget;
@@ -43,6 +44,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<AInventorySceneRenderer>> InventorySceneRendererList;
 
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
+	FRotationSettings RotationSettings;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
+	FCameraSettings CameraSettings;
+	
 	//
 	int IndexSpawn = 0;
 

@@ -57,7 +57,6 @@ void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInv
 		ScaleBoxSlot->SetOffsets(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
 		ScaleBoxSlot->SetAlignment(FVector2D(0.0f, 0.0f));
 		ScaleBoxSlot->SetAutoSize(true);
-		
 	}
 	
 	auto Box = ScaleBox->AddChild(NewInventoryItemSlotsWidget);
@@ -65,8 +64,6 @@ void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInv
 		return;
 	
 	FTimerHandle& TimerHandle = ActiveTimers.FindOrAdd(NewInventoryItemSlotsWidget);
-
-	// Запускаем таймер
 	GetWorld()->GetTimerManager().SetTimer(
 		TimerHandle,
 		[this, NewInventoryItemSlotsWidget, ScaleBox]()
@@ -87,8 +84,6 @@ void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInv
 		0.1f, 
 		true  
 	);
-
-	
 
 	UInventoryItemSlotsWidgets.Add(NewInventoryItemSlotsWidget);
 }

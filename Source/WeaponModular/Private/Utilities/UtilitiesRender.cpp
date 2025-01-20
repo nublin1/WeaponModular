@@ -67,7 +67,7 @@ FVector2D UUtilitiesRender::WorldToTextureCoordinates(USceneCaptureComponent2D* 
 {
 	if (!SceneCaptureComponent || !SceneCaptureComponent->TextureTarget)
 	{
-		return FVector2D(-1.0f, -1.0f); // Ошибка
+		return FVector2D(-1.0f, -1.0f); 
 	}
 
 	UTextureRenderTarget2D* RenderTarget = SceneCaptureComponent->TextureTarget;
@@ -97,18 +97,18 @@ FVector2D UUtilitiesRender::WorldToTextureCoordinates(USceneCaptureComponent2D* 
 
 	if (SceneCaptureComponent->ProjectionType == ECameraProjectionMode::Perspective)
 	{
-		float FOV = SceneCaptureComponent->FOVAngle;
-		float HalfFOVRad = FMath::DegreesToRadians(FOV / 2.0f);
+		float HorizontalFOV = SceneCaptureComponent->FOVAngle;
+		float VerticalFOV = 2.0f * FMath::Atan(FMath::Tan(FMath::DegreesToRadians(HorizontalFOV / 2.0f)) / TextureAspectRatio);
 
-		ScreenPosition.X = (ViewCoordinates.Y / ViewCoordinates.X) / FMath::Tan(HalfFOVRad);
-		ScreenPosition.Y = (ViewCoordinates.Z / ViewCoordinates.X) / FMath::Tan(HalfFOVRad);
-		ScreenPosition.Y /= TextureAspectRatio;
+		ScreenPosition.X = (ViewCoordinates.Y / ViewCoordinates.X) / FMath::Tan(FMath::DegreesToRadians(HorizontalFOV / 2.0f));
+		ScreenPosition.Y = (ViewCoordinates.Z / ViewCoordinates.X) / FMath::Tan(VerticalFOV / 2.0f);
+	
 	}
 	else if (SceneCaptureComponent->ProjectionType == ECameraProjectionMode::Orthographic)
 	{
 		float OrthoWidth = SceneCaptureComponent->OrthoWidth;
 		ScreenPosition.X = ViewCoordinates.Y / (OrthoWidth * 0.5f);
-		ScreenPosition.Y = ViewCoordinates.Z / ((OrthoWidth / TextureAspectRatio) * 0.5f);
+		ScreenPosition.Y = ViewCoordinates.Z / (OrthoWidth / TextureAspectRatio * 0.5f);
 	}
 
 	ScreenPosition.X = 0.5f + ScreenPosition.X * 0.5f;

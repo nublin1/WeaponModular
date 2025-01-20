@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Settings/Settings.h"
 #include "AInventorySceneRenderer.generated.h"
-
 
 
 UCLASS()
@@ -31,6 +31,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateVisibleComponents();
 
+	// Setters
+	UFUNCTION()
+	void SetRotationSettings(FRotationSettings NewSettings) {RotationSettings = NewSettings;}
+
 protected:
 	//====================================================================
 	// FUNCTIONS
@@ -41,6 +45,9 @@ protected:
 	virtual void RotateObject(FVector2D Delta);
 	UFUNCTION(BlueprintCallable)
 	virtual void ZoomObject(float Delta);
+
+	UPROPERTY()
+	FRotationSettings RotationSettings;	
 	
 public:	
 	// Called every frame

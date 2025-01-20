@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "HUD/UI/BUIUserWidget.h"
-#include "Utilities/UtilitiesRender.h"
+#include "Settings/Settings.h"
+
 #include "InventoryItemSlotWidget.generated.h"
 
 class UScaleBox;
@@ -21,6 +22,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseWheelDelta, float, Delta);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemPartWidgetAdded, UItemPartWidget*, WidgetAdded);
 #pragma endregion
 
+#pragma region Enums
 UENUM(Blueprintable)
 enum class EWidgetsMethodLocation: uint8
 {
@@ -39,6 +41,7 @@ struct FItemsWidgetSlot
 	UPROPERTY()
 	UItemPartWidget* ItemPartWidgetLinked = nullptr;
 };
+#pragma endregion
 
 UCLASS()
 class WEAPONMODULAR_API UInventoryItemSlotWidget : public UBUIUserWidget
@@ -83,6 +86,7 @@ public:
 	
 	// Setters
 	void SetRenderTargetMaterial(UTextureRenderTarget2D* RenderTarget);
+	void SetRotationSettings(FRotationSettings NewSettings) {RotationSettings = NewSettings;}
 
 protected:
 	//====================================================================
@@ -125,9 +129,8 @@ protected:
 	EWidgetsMethodLocation WidgetsMethodLocation = EWidgetsMethodLocation::Oval;
 
 	// Rotation
-	float RotationAngle = 0.0f;
-	float RotationSpeed = 35.0f;
-	
+	float RotationAngle = 0.0f;	
+	FRotationSettings RotationSettings;	
 
 	//====================================================================
 	// FUNCTIONS
@@ -157,7 +160,6 @@ protected:
 	UFUNCTION()
 	FVector2D Calculate3DRotationPosition( float Radius, float AngleOffset, float& OutDepth, FVector2D& BasePosition);
 	
-
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

@@ -79,10 +79,12 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 		UE_LOG(LogTemp, Error, TEXT("Failed to create RenderTarget."));
 		return;
 	}
-
-	RendererInstance->CaptureComponent->AddRelativeLocation(FVector(-50.0f, 0.0f, 0.0f));
-	//RendererInstance->CaptureComponent->ProjectionType = ECameraProjectionMode::Type::Orthographic;
-	RendererInstance->CaptureComponent->OrthoWidth = 140.0f;
+	
+	RendererInstance->SetRotationSettings(RotationSettings);
+	RendererInstance->CaptureComponent->AddRelativeLocation(CameraSettings.InitialRelativeLocation);
+	RendererInstance->CaptureComponent->ProjectionType = CameraSettings.CameraProjectionMode;
+	RendererInstance->CaptureComponent->OrthoWidth = CameraSettings.OrthoWidth;
+	RendererInstance->CaptureComponent->FOVAngle = CameraSettings.FOVAngle;
 	RendererInstance->CaptureComponent->TextureTarget = RenderTarget;
 
 	RendererInstance->ChildComponent->DestroyChildActor();
@@ -109,4 +111,5 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	
 	MainHUDContainer->WeaponLayout->AddInventoryItemSlotsWidget(InventoryItemSlotWidget);
 	InventoryItemSlotWidget->SetRenderTargetMaterial(RenderTarget);
+	InventoryItemSlotWidget->SetRotationSettings(RotationSettings);
 }

@@ -36,7 +36,7 @@ public:
 	// Getters
 	USlateBrushAsset* GetBrushTexture() {return BrushTexture;}
 	UDataTable* GetUsableTable() {return UsableTable;}
-	FDataTableRowHandle GetStartingWeaponPartRow() {return StartingWeaponPartRow;}
+	FDataTableRowHandle GetInitialWeaponPartRow() {return InitialWeaponPartRow;}
 	FWeaponPartData* GetRetrievedWeaponPartData() {return RetrievedWeaponPartData;}
 
 	// Setters
@@ -52,7 +52,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UDataTable> UsableTable;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FDataTableRowHandle StartingWeaponPartRow;
+	FDataTableRowHandle InitialWeaponPartRow;
 	FWeaponPartData* RetrievedWeaponPartData;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
