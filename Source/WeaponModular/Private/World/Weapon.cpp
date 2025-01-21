@@ -27,6 +27,19 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitAttachPoints();
+}
+
+void AWeapon::InitAttachPoints()
+{
+	if (WeaponMarkers.IsEmpty())
+		return;
+
+	for (int i=0; i<WeaponMarkers.Num(); i++)
+	{
+		WeaponMarkers[i]->Initialize();
+	}
 }
 
 void AWeapon::Tick(float DeltaTime)

@@ -6,7 +6,6 @@
 #include "Components/SceneCaptureComponent2D.h"
 
 
-// Sets default values
 AInventorySceneRenderer::AInventorySceneRenderer()
 {
 	PrimaryActorTick.bCanEverTick = true;

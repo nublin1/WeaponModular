@@ -3,7 +3,6 @@
 
 #include "PC_ModularWeapon.h"
 
-#include "Components/CanvasPanel.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Data/WeaponData.h"
 #include "HUD/UI/Layouts/MainLayout.h"
@@ -87,9 +86,11 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	RendererInstance->CaptureComponent->FOVAngle = CameraSettings.FOVAngle;
 	RendererInstance->CaptureComponent->TextureTarget = RenderTarget;
 
-	RendererInstance->ChildComponent->DestroyChildActor();
+	//RendererInstance->ChildComponent->DestroyChildActor();
 	RendererInstance->ChildComponent->SetChildActorClass(*WData->Weapon);
+	//RendererInstance->ChildComponent->CreateChildActor();
 
+	
 	RendererInstance->UpdateVisibleComponents();
 
 	TObjectPtr<UInventoryItemSlotWidget> InventoryItemSlotWidget;
@@ -104,6 +105,7 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 			return;
 		
 		InventoryItemSlotWidget = CreateWidget<UInventoryItemSlotWidget>(GetWorld(), InventoryItemSlotWidgetClass);
+		InventoryItemSlotWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if (!InventoryItemSlotWidget)
@@ -112,4 +114,5 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	MainHUDContainer->WeaponLayout->AddInventoryItemSlotsWidget(InventoryItemSlotWidget);
 	InventoryItemSlotWidget->SetRenderTargetMaterial(RenderTarget);
 	InventoryItemSlotWidget->SetRotationSettings(RotationSettings);
+	InventoryItemSlotWidget->SetVisibility(ESlateVisibility::Visible);
 }

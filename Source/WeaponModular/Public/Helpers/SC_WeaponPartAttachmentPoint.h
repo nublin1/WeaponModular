@@ -30,7 +30,9 @@ public:
 	//====================================================================
 	USC_WeaponPartAttachmentPoint();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
+	virtual void Initialize();
+	UFUNCTION(BlueprintCallable)
 	virtual void UpdateStaticMeshComponent();
 
 	// Getters

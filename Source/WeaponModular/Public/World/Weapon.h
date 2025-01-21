@@ -17,6 +17,9 @@ class WEAPONMODULAR_API AWeapon : public AActor
 public:		
 	AWeapon();
 
+	UFUNCTION(BlueprintCallable)
+	void InitAttachPoints();
+
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES

@@ -16,7 +16,11 @@ USC_WeaponPartAttachmentPoint::USC_WeaponPartAttachmentPoint(): RetrievedWeaponP
 void USC_WeaponPartAttachmentPoint::BeginPlay()
 {
 	Super::BeginPlay();
+	
+}
 
+void USC_WeaponPartAttachmentPoint::Initialize()
+{
 	if (!InitialWeaponPartRow.DataTable || InitialWeaponPartRow.RowName.IsNone())
 		return;
 
@@ -33,13 +37,12 @@ void USC_WeaponPartAttachmentPoint::UpdateStaticMeshComponent()
 {
 	if (RetrievedWeaponPartData)
 	{
-		if (!StaticMeshComponent)
-		{
-			StaticMeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(),
-			                                                      TEXT("StaticMesh"));
-			StaticMeshComponent->RegisterComponent();
-		}
+		if(StaticMeshComponent)
+			StaticMeshComponent->DestroyComponent();
 		
+		StaticMeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(),
+			                                                      TEXT("StaticMesh"));
+		StaticMeshComponent->RegisterComponent();
 		StaticMeshComponent->SetStaticMesh(RetrievedWeaponPartData->BaseWeaponPartData.VisualProperties.StaticMesh);
 		StaticMeshComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 	}
