@@ -40,6 +40,7 @@ public:
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+	UItemPartWidget();
 
 	UFUNCTION(BlueprintCallable)
 	void UpdateVisual();
@@ -79,6 +80,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USC_WeaponPartAttachmentPoint> TargetMarkerLinked;
 
+	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UDataTable> WidgetTable;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -89,6 +91,10 @@ protected:
 	FVector2D BrushTargetPoint;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D BrushTargetSize = FVector2D(16.0f, 16.0f);
+
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UMaterialInterface> IconMaterial;
 
 	//====================================================================
 	// FUNCTIONS

@@ -17,6 +17,15 @@ void UItemPartWidget::NativeOnInitialized()
 	ListButton->OnClicked.AddDynamic(this, &UItemPartWidget::ListButtonClick);
 }
 
+UItemPartWidget::UItemPartWidget()
+{
+	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialFinder(TEXT("/Game/ModularWeapon/Weapon/Mat_IconMaterial.Mat_IconMaterial"));
+	if (MaterialFinder.Succeeded())
+	{
+		IconMaterial = MaterialFinder.Object;
+	}
+}
+
 void UItemPartWidget::UpdateVisual()
 {
 	if (!TargetMarkerLinked)
@@ -34,9 +43,28 @@ void UItemPartWidget::UpdateVisual()
 		return;
 	}
 
+	if (IconMaterial) 
+	{
+		if (UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(IconMaterial, this))
+		{
+			DynamicMaterial->SetTextureParameterValue(FName("BaseTexture"), RetrievedWeaponPartRow->BaseWeaponPartData.VisualProperties.Texture);
+			MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(DynamicMaterial);
+			MainItemIconWidget->GetContent_Image()->SetOpacity(1.0f);
+			RetrievedWeaponPartRow->BaseWeaponPartData.VisualProperties.DynamicMaterial = DynamicMaterial;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Failed to create dynamic material!"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("IconMaterial is null!"));
+	}
+
 	BrushTexture = TargetMarkerLinked->GetBrushTexture();
-	MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(RetrievedWeaponPartRow->BaseWeaponPartData.VisualProperties.Material);
-	MainItemIconWidget->GetContent_Image()->SetOpacity(1.0f);
+	//MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(RetrievedWeaponPartRow->BaseWeaponPartData.VisualProperties.Material);
+
 	FText Name = FText::FromString(RetrievedWeaponPartRow->Name.ToString());
 	MainItemIconWidget->GetContent_Text_Name()->SetText(Name);
 }
@@ -73,7 +101,7 @@ UWeaponPartListWidget* UItemPartWidget::CreateWeaponPartListWidget()
 	if (UWeaponPartListWidget* WidgetInstance = CreateWidget<UWeaponPartListWidget>(
 		GetWorld(), WeaponPartListWidgetClass))
 	{
-		auto CountParts = UWeaponPartDataUtilities::GetSpecificWeaponParts(
+		auto WeaponParts = UWeaponPartDataUtilities::GetSpecificWeaponParts(
 			WidgetTable,
 			WidgetWeaponPartType.WeaponPartType,
 			WidgetWeaponPartType.WeaponPartType == EWeaponPartType::Essential?
@@ -82,9 +110,9 @@ UWeaponPartListWidget* UItemPartWidget::CreateWeaponPartListWidget()
 
 		WidgetInstance->ClearPartList();
 		WidgetInstance->AddEmptyPartToList(); 
-		if (CountParts.Num() > 0)
+		if (WeaponParts.Num() > 0)
 		{
-			WidgetInstance->AddPartsToList(CountParts);
+			WidgetInstance->AddPartsToList(WeaponParts);
 		}
 
 		auto PartList = WidgetInstance->GetWeaponPartListBox();

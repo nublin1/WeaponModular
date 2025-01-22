@@ -39,9 +39,9 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 	{
 		if (TObjectPtr<UItemPartIconWidget> ItemPartIconWidget = CreateWidget<UItemPartIconWidget>(GetWorld(), ItemPartIconWidgetClass))
 		{
-			UTexture* Texture;
+			UTexture* Texture = ListOfParts[i].BaseWeaponPartData.VisualProperties.Texture;
 			FVector2D TextureSize = FVector2D(256, 256);
-			if (ListOfParts[i].BaseWeaponPartData.VisualProperties.Material->GetTextureParameterValue(FName("BaseTexture"), Texture))
+			if (Texture)
 			{
 				if (TObjectPtr<UTexture2D> Texture2D = Cast<UTexture2D>(Texture))
 				{
@@ -53,7 +53,7 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 			}
 			
 			FSlateBrush Brush;
-			Brush.SetResourceObject(ListOfParts[i].BaseWeaponPartData.VisualProperties.Material);
+			Brush.SetResourceObject(ListOfParts[i].BaseWeaponPartData.VisualProperties.DynamicMaterial);
 			Brush.ImageSize = TextureSize;
 			ItemPartIconWidget->GetContent_Image()->SetBrush(Brush);
 			ItemPartIconWidget->GetContent_Image()->SetOpacity(1.0f);

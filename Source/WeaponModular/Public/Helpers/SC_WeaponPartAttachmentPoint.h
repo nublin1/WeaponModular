@@ -36,6 +36,9 @@ public:
 	virtual void UpdateStaticMeshComponent();
 
 	// Getters
+	bool GetIsNeedDrawLine() const {return bIsNeedDrawLine;}
+	FLinearColor GetLineColor() const {return LineColor;}
+	float GetLineThickness() const {return LineThickness;}
 	USlateBrushAsset* GetBrushTexture() {return BrushTexture;}
 	UDataTable* GetUsableTable() {return UsableTable;}
 	FDataTableRowHandle GetInitialWeaponPartRow() {return InitialWeaponPartRow;}
@@ -48,7 +51,12 @@ protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsNeedDrawLine = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bIsNeedDrawLine == true"))
+	FLinearColor LineColor = FLinearColor::Yellow;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bIsNeedDrawLine == true"))
+	float LineThickness = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USlateBrushAsset> BrushTexture;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

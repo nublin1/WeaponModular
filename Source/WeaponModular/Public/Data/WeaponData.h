@@ -19,6 +19,6 @@ struct WEAPONMODULAR_API FWeaponData : public FTableRowBase
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AWeapon> Weapon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ToolTip = "Optional: Leave empty if not needed"))
 	TSubclassOf<UInventoryItemSlotWidget> LinkedInventoryItemSlotWidget; 
 };

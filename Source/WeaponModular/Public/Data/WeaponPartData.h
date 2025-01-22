@@ -55,8 +55,11 @@ struct FWeaponPartAssets
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMesh> StaticMesh = nullptr;
 
+	UPROPERTY()
+	TObjectPtr<UMaterialInterface> DynamicMaterial = nullptr;
+
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<UMaterialInterface> Material = nullptr;
+	TObjectPtr<UTexture2D> Texture = nullptr;
 };
 
 USTRUCT(BlueprintType)

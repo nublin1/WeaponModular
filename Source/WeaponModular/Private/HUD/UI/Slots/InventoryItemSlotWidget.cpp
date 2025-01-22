@@ -323,24 +323,20 @@ void UInventoryItemSlotWidget::CalculateLineToDraw(UItemPartWidget* ItemPartWidg
 	if (!AttachPoint)
 		return;
 
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(
-		TimerHandle, 
-		[this,AttachPoint, ItemPartWidget]()
-		{
-			auto Name = ItemPartWidget->GetName();
-			auto Position = ItemPartWidget->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0,0));
-			auto Size = ItemPartWidget->GetMainItemIconWidget()->GetCachedGeometry().GetLocalSize();
-			auto StartPoint = Position + FVector2D(Size.X / 2.0f, Size.Y / 2.0f);
-			auto EndPoint= CalculateCoordinates(CaptureComponent, AttachPoint->GetComponentLocation());
-			
-			ItemPartWidget->SetBrushTargetPoint(EndPoint);
-			WBP_LineDrawer->AddLineToDraw(Name, StartPoint, EndPoint);
-
-		},
-		0.15f, 
-		false 
-	);
+	if (!AttachPoint->GetIsNeedDrawLine())
+		return;
+	
+	auto Name = ItemPartWidget->GetName();
+	auto Position = ItemPartWidget->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0,0));
+	auto Size = ItemPartWidget->GetMainItemIconWidget()->GetCachedGeometry().GetLocalSize();
+	auto StartPoint = Position + FVector2D(Size.X / 2.0f, Size.Y / 2.0f);
+	auto EndPoint= CalculateCoordinates(CaptureComponent, AttachPoint->GetComponentLocation());
+	auto LineColor = AttachPoint->GetLineColor();
+	auto LineThickness = AttachPoint->GetLineThickness();
+		
+	ItemPartWidget->SetBrushTargetPoint(EndPoint);
+	WBP_LineDrawer->AddLineToDraw(Name, StartPoint, EndPoint, LineColor, LineThickness);
+	
 }
 
 void UInventoryItemSlotWidget::ListButtonClick(UItemPartWidget* FromWidget)
