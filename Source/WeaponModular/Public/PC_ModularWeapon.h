@@ -30,7 +30,7 @@ protected:
 	// PROPERTIES AND VARIABLES
 	//====================================================================
 	//
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UMainLayout> MainHUDContainer;
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -41,8 +41,9 @@ protected:
 	TSubclassOf<UInventoryItemSlotWidget> InventoryItemSlotWidgetClass;
 
 	// Data
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<AInventorySceneRenderer>> InventorySceneRendererList;
+	
 
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")

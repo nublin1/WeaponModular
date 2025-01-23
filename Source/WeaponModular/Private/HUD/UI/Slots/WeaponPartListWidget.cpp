@@ -52,8 +52,17 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 				}
 			}
 			
+			
 			FSlateBrush Brush;
-			Brush.SetResourceObject(ListOfParts[i].BaseWeaponPartData.VisualProperties.DynamicMaterial);
+			UMaterialInterface* Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(),
+				nullptr, TEXT("/Game/ModularWeapon/Weapon/Mat_IconMaterial.Mat_IconMaterial")));
+			if (Material)
+			{
+				UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
+				DynamicMaterial->SetTextureParameterValue(FName("BaseTexture"), ListOfParts[i].BaseWeaponPartData.VisualProperties.Texture);
+				Brush.SetResourceObject(DynamicMaterial);
+			}
+			
 			Brush.ImageSize = TextureSize;
 			ItemPartIconWidget->GetContent_Image()->SetBrush(Brush);
 			ItemPartIconWidget->GetContent_Image()->SetOpacity(1.0f);

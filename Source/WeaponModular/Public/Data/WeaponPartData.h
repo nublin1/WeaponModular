@@ -7,29 +7,15 @@
 #include "Engine/StaticMesh.h"
 #include "WeaponPartData.generated.h"
 
-UENUM(BlueprintType)
+UENUM(Blueprintable)
 enum class EWeaponPartType : uint8
 {
-	None			UMETA(DisplayName = "None"),
-	Essential		UMETA(DisplayName = "Essential"),     // Основные части (курок, ствол, приклад и т.д.)
-	Attachment		UMETA(DisplayName = "Attachment")    // Навесные части (глушитель, прицел и т.д.)
-};
-
-UENUM(Blueprintable)
-enum class EWeaponEssential : uint8
-{
-	None			UMETA(DisplayName = "None"),
-	Barrel			UMETA(DisplayName = "Barrel"),
-	Gunstock		UMETA(DisplayName = "Gunstock"),
-	Magazine		UMETA(DisplayName = "Magazine"),
-};
-
-UENUM(Blueprintable)
-enum class EWeaponAttachment : uint8
-{
-	None			UMETA(DisplayName = "None"),
-	Barrel			UMETA(DisplayName = "BarrelAttachment"),
-	Scope			UMETA(DisplayName = "Scope"),
+	None				UMETA(DisplayName = "None"),
+	BarrelAttachment	UMETA(DisplayName = "BarrelAttachment"),
+	Scope				UMETA(DisplayName = "Scope"),
+	Barrel				UMETA(DisplayName = "Barrel"),
+	Gunstock			UMETA(DisplayName = "Gunstock"),
+	Magazine			UMETA(DisplayName = "Magazine"),
 };
 
 USTRUCT(BlueprintType)
@@ -39,12 +25,6 @@ struct FWeaponPartTypeProperties
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EWeaponPartType WeaponPartType = EWeaponPartType::None;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "WeaponPartType == EWeaponPartType::Essential"))
-	EWeaponEssential WeaponEssential = EWeaponEssential::None;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "WeaponPartType == EWeaponPartType::Attachment"))
-	EWeaponAttachment WeaponAttachment = EWeaponAttachment::None;
 };
 
 USTRUCT(BlueprintType)
@@ -54,9 +34,6 @@ struct FWeaponPartAssets
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UStaticMesh> StaticMesh = nullptr;
-
-	UPROPERTY()
-	TObjectPtr<UMaterialInterface> DynamicMaterial = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UTexture2D> Texture = nullptr;
@@ -94,15 +71,14 @@ class WEAPONMODULAR_API UWeaponPartDataUtilities : public UObject
 
 public:
 	UFUNCTION(BlueprintCallable)
-	static TArray<FWeaponPartData> GetSpecificWeaponParts(UDataTable* DataTable, EWeaponPartType PartType,
-	                                                       uint8 SpecificTypeValue);
+	static TArray<FWeaponPartData> GetSpecificWeaponParts(UDataTable* DataTable, EWeaponPartType PartType);
 
 	UFUNCTION(BlueprintCallable)
 	static bool AreWeaponPartPropertiesEqual(FWeaponPartTypeProperties WeaponPartTypeProperties, FWeaponPartTypeProperties RowName2);
 };
 
 inline TArray<FWeaponPartData> UWeaponPartDataUtilities::GetSpecificWeaponParts(UDataTable* DataTable,
-	EWeaponPartType PartType, uint8 SpecificTypeValue)
+	EWeaponPartType PartType)
 {
 	TArray<FWeaponPartData> MatchingParts;
 
@@ -120,21 +96,8 @@ inline TArray<FWeaponPartData> UWeaponPartDataUtilities::GetSpecificWeaponParts(
 		
 		const FWeaponPartTypeProperties& TypeProperties = WeaponPartData->BaseWeaponPartData.TypeProperties;
 		if (TypeProperties.WeaponPartType == PartType)
-		{
-			bool bMatchesSpecificType = false;
-			if (PartType == EWeaponPartType::Essential)
-			{
-				bMatchesSpecificType = (static_cast<uint8>(TypeProperties.WeaponEssential) == SpecificTypeValue);
-			}
-			else if (PartType == EWeaponPartType::Attachment)
-			{
-				bMatchesSpecificType = (static_cast<uint8>(TypeProperties.WeaponAttachment) == SpecificTypeValue);
-			}
-			
-			if (bMatchesSpecificType)
-			{
-				MatchingParts.Add(*WeaponPartData);
-			}
+		{			
+			MatchingParts.Add(*WeaponPartData);
 		}
 	}
 
@@ -146,22 +109,6 @@ inline bool UWeaponPartDataUtilities::AreWeaponPartPropertiesEqual(FWeaponPartTy
 	if (WeaponPartTypeProperties.WeaponPartType != RowName2.WeaponPartType)
 	{
 		return false;
-	}
-	
-	if (WeaponPartTypeProperties.WeaponPartType == EWeaponPartType::Essential)
-	{
-		if (WeaponPartTypeProperties.WeaponEssential != RowName2.WeaponEssential)
-		{
-			return false;
-		}
-	}
-	else if (WeaponPartTypeProperties.WeaponPartType == EWeaponPartType::Attachment)
-	{
-		if (WeaponPartTypeProperties.WeaponAttachment != RowName2.WeaponAttachment)
-		{
-			return false;
-		}
-	}
-	
+	}	
 	return true;
 }

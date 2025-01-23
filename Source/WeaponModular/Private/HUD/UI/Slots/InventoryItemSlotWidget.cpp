@@ -178,6 +178,16 @@ void UInventoryItemSlotWidget::CalculateItemSlotPositions(FVector2D size)
 	}
 }
 
+TArray<FVector2D> UInventoryItemSlotWidget::GetItemsWidgetPositions()
+{
+	TArray<FVector2D> Result;
+	for (auto Element : ItemsWidgetPositions)
+	{
+		Result.Add(Element.SlotPosition);
+	}
+	return Result;
+}
+
 void UInventoryItemSlotWidget::SetRenderTargetMaterial(UTextureRenderTarget2D* RenderTarget)
 {
 	if (!RenderTargetMaterial) 

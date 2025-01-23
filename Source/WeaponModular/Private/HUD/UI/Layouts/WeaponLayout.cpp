@@ -87,3 +87,55 @@ void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInv
 
 	UInventoryItemSlotsWidgets.Add(NewInventoryItemSlotsWidget);
 }
+
+void UWeaponLayout::OnNextButtonClicked()
+{
+	if (!ContentPanel)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ContentPanel is null!"));
+		return;
+	}
+	if (UWidget* CurrentWidget = ContentPanel->GetChildAt(CurrentChildIndexVisible))
+	{
+		CurrentWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	const int32 ChildrenCount = ContentPanel->GetChildrenCount();
+	if (ChildrenCount <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ContentPanel has no children!"));
+		return;
+	}
+
+	CurrentChildIndexVisible = (CurrentChildIndexVisible + 1) % ChildrenCount;
+	if (UWidget* NextWidget = ContentPanel->GetChildAt(CurrentChildIndexVisible))
+	{
+		NextWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void UWeaponLayout::OnPreviousButtonClicked()
+{
+	if (!ContentPanel)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ContentPanel is null!"));
+		return;
+	}
+	
+	if (UWidget* CurrentWidget = ContentPanel->GetChildAt(CurrentChildIndexVisible))
+	{
+		CurrentWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	
+	const int32 ChildrenCount = ContentPanel->GetChildrenCount();
+	if (ChildrenCount <= 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ContentPanel has no children!"));
+		return;
+	}
+
+	CurrentChildIndexVisible = (CurrentChildIndexVisible - 1 + ChildrenCount) % ChildrenCount;
+	if (UWidget* PreviousWidget = ContentPanel->GetChildAt(CurrentChildIndexVisible))
+	{
+		PreviousWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+}

@@ -50,7 +50,6 @@ void UItemPartWidget::UpdateVisual()
 			DynamicMaterial->SetTextureParameterValue(FName("BaseTexture"), RetrievedWeaponPartRow->BaseWeaponPartData.VisualProperties.Texture);
 			MainItemIconWidget->GetContent_Image()->SetBrushFromMaterial(DynamicMaterial);
 			MainItemIconWidget->GetContent_Image()->SetOpacity(1.0f);
-			RetrievedWeaponPartRow->BaseWeaponPartData.VisualProperties.DynamicMaterial = DynamicMaterial;
 		}
 		else
 		{
@@ -103,9 +102,7 @@ UWeaponPartListWidget* UItemPartWidget::CreateWeaponPartListWidget()
 	{
 		auto WeaponParts = UWeaponPartDataUtilities::GetSpecificWeaponParts(
 			WidgetTable,
-			WidgetWeaponPartType.WeaponPartType,
-			WidgetWeaponPartType.WeaponPartType == EWeaponPartType::Essential?
-				static_cast<int>(WidgetWeaponPartType.WeaponEssential) : static_cast<int>(WidgetWeaponPartType.WeaponAttachment)
+			WidgetWeaponPartType.WeaponPartType
 			);
 
 		WidgetInstance->ClearPartList();

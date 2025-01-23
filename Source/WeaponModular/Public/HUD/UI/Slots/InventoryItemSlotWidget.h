@@ -75,14 +75,7 @@ public:
 
 	// Getters
 	UFUNCTION(BlueprintCallable)
-	TArray<FVector2D> GetItemsWidgetPositions() {
-		TArray<FVector2D> Result;
-		for (auto Element : ItemsWidgetPositions)
-		{
-			Result.Add(Element.SlotPosition);
-		}
-		return Result;
-	}
+	TArray<FVector2D> GetItemsWidgetPositions();
 	
 	// Setters
 	void SetRenderTargetMaterial(UTextureRenderTarget2D* RenderTarget);

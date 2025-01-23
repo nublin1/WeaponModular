@@ -49,7 +49,7 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	if (!InventorySceneRendererClass)
 		return;
 	
-	FVector InstanceSpawnLocation = FVector(0.0f, 0.0f + IndexSpawn* 50.0f, 0.0f); 
+	FVector InstanceSpawnLocation = FVector(0.0f, 0.0f + IndexSpawn* 50.0f, -1000.0f); 
 	FRotator InstanceSpawnRotation = FRotator::ZeroRotator;
 	
 	AInventorySceneRenderer* RendererInstance = GetWorld()->SpawnActor<AInventorySceneRenderer>(

@@ -43,4 +43,9 @@ protected:
 	// FUNCTIONS
 	//====================================================================
 	virtual void NativeConstruct() override;
+
+	UFUNCTION(BlueprintCallable)
+	void OnNextButtonClicked();
+	UFUNCTION(BlueprintCallable)
+	void OnPreviousButtonClicked();
 };
