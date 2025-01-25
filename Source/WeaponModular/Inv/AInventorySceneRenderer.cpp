@@ -73,18 +73,21 @@ void AInventorySceneRenderer::ZoomObject(float Delta)
 		float MinOrthoWidth = 50.0f;
 		float MaxOrthoWidth = 1000.0f;
 		
-		float NewOrthoWidth = CaptureComponent->OrthoWidth - Delta * RotationSettings.ZoomSpeed;
+		float NewOrthoWidth = CaptureComponent->OrthoWidth - Delta * CameraSettings.CameraOffsetSpeed;
 		NewOrthoWidth = FMath::Clamp(NewOrthoWidth, MinOrthoWidth, MaxOrthoWidth);
 		CaptureComponent->OrthoWidth = NewOrthoWidth;
 	}
 	else
 	{
-		float MinZoomDistance = -30.0f;
-		float MaxZoomDistance = -1000.0f;
 		float DeltaTime = GetWorld()->GetDeltaSeconds();
-
 		auto CurrentLocation = CaptureComponent->GetComponentLocation();
-		FVector NewLocation = CurrentLocation + CaptureComponent->GetForwardVector() * Delta * RotationSettings.ZoomSpeed * DeltaTime;
+		FVector NewLocation = CurrentLocation + CaptureComponent->GetForwardVector() * Delta * CameraSettings.CameraOffsetSpeed * DeltaTime;
+
+		FVector StartLocation = CaptureComponent->GetComponentLocation();
+		FVector OffsetVector = NewLocation - StartLocation;
+		float Distance = OffsetVector.Size();
+		float ClampedDistance = FMath::Clamp(Distance, FMath::Abs(CameraSettings.MinOffsetDistance), FMath::Abs(CameraSettings.MaxOffsetDistance));
+		FVector ClampedOffsetVector = OffsetVector.GetSafeNormal() * ClampedDistance;
 	
 		CaptureComponent->SetWorldLocation(NewLocation);
 	}

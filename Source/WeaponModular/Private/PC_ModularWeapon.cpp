@@ -70,7 +70,6 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	FVector2D ViewportSize = FVector2D( 1, 1 );
 	ViewportSize.X = GSystemResolution.ResX;
 	ViewportSize.Y = GSystemResolution.ResY;
-	
 
 	UTextureRenderTarget2D* RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(this, ViewportSize.X, ViewportSize.Y, RTF_RGBA16f);
 	if (!RenderTarget)
@@ -80,21 +79,19 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	}
 	
 	RendererInstance->SetRotationSettings(RotationSettings);
+	RendererInstance->SetCameraSettings(CameraSettings);
 	RendererInstance->CaptureComponent->AddRelativeLocation(CameraSettings.InitialRelativeLocation);
 	RendererInstance->CaptureComponent->ProjectionType = CameraSettings.CameraProjectionMode;
 	RendererInstance->CaptureComponent->OrthoWidth = CameraSettings.OrthoWidth;
 	RendererInstance->CaptureComponent->FOVAngle = CameraSettings.FOVAngle;
 	RendererInstance->CaptureComponent->TextureTarget = RenderTarget;
-
+	
 	//RendererInstance->ChildComponent->DestroyChildActor();
 	RendererInstance->ChildComponent->SetChildActorClass(*WData->Weapon);
-	//RendererInstance->ChildComponent->CreateChildActor();
 
-	
 	RendererInstance->UpdateVisibleComponents();
 
 	TObjectPtr<UInventoryItemSlotWidget> InventoryItemSlotWidget;
-
 	if (WData->LinkedInventoryItemSlotWidget)
 	{
 		InventoryItemSlotWidget = CreateWidget<UInventoryItemSlotWidget>(GetWorld(), WData->LinkedInventoryItemSlotWidget);
@@ -105,7 +102,6 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 			return;
 		
 		InventoryItemSlotWidget = CreateWidget<UInventoryItemSlotWidget>(GetWorld(), InventoryItemSlotWidgetClass);
-		InventoryItemSlotWidget->SetVisibility(ESlateVisibility::Collapsed);
 	}
 
 	if (!InventoryItemSlotWidget)
@@ -114,5 +110,5 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	MainHUDContainer->WeaponLayout->AddInventoryItemSlotsWidget(InventoryItemSlotWidget);
 	InventoryItemSlotWidget->SetRenderTargetMaterial(RenderTarget);
 	InventoryItemSlotWidget->SetRotationSettings(RotationSettings);
-	InventoryItemSlotWidget->SetVisibility(ESlateVisibility::Visible);
+	InventoryItemSlotWidget->SetUISettins(UISettings);
 }

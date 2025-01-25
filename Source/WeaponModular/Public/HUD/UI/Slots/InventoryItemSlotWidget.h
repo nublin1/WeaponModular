@@ -23,13 +23,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemPartWidgetAdded, UItemPartWid
 #pragma endregion
 
 #pragma region Enums
-UENUM(Blueprintable)
-enum class EWidgetsMethodLocation: uint8
-{
-	Oval			UMETA(DisplayName = "Oval"),
-	Square			UMETA(DisplayName = "Square"),
-	Circle			UMETA(DisplayName = "Circle"),
-};
 
 USTRUCT()
 struct FItemsWidgetSlot
@@ -79,6 +72,7 @@ public:
 	
 	// Setters
 	void SetRenderTargetMaterial(UTextureRenderTarget2D* RenderTarget);
+	void SetUISettins(FUISettings NewUISettings) {UISettings = NewUISettings;}
 	void SetRotationSettings(FRotationSettings NewSettings) {RotationSettings = NewSettings;}
 
 protected:
@@ -113,13 +107,11 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FVector2D> BoxesToDraw;
 
-	// ItemWidgets data
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
-	int32 TotalItemWidgets = 12;
+	// UI Settings
+	UPROPERTY(BlueprintReadWrite)
+	FUISettings UISettings;
 	UPROPERTY()
 	TArray<FItemsWidgetSlot> ItemsWidgetPositions;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
-	EWidgetsMethodLocation WidgetsMethodLocation = EWidgetsMethodLocation::Oval;
 
 	// Rotation
 	float RotationAngle = 0.0f;	

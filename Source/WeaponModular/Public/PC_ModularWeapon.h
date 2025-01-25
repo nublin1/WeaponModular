@@ -50,6 +50,8 @@ protected:
 	FRotationSettings RotationSettings;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	FCameraSettings CameraSettings;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
+	FUISettings UISettings;
 	
 	//
 	int IndexSpawn = 0;

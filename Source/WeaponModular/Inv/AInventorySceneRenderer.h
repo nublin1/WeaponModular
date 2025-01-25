@@ -32,9 +32,9 @@ public:
 	void UpdateVisibleComponents();
 
 	// Setters
-	UFUNCTION()
-	void SetRotationSettings(FRotationSettings NewSettings) {RotationSettings = NewSettings;}
-
+	void SetRotationSettings(const FRotationSettings NewSettings) {RotationSettings = NewSettings;}
+	void SetCameraSettings(const FCameraSettings& NewSettings) {CameraSettings = NewSettings;}
+	
 protected:
 	//====================================================================
 	// FUNCTIONS
@@ -47,7 +47,10 @@ protected:
 	virtual void ZoomObject(float Delta);
 
 	UPROPERTY()
-	FRotationSettings RotationSettings;	
+	FRotationSettings RotationSettings;
+	UPROPERTY()
+	FCameraSettings CameraSettings;
+	
 	
 public:	
 	// Called every frame

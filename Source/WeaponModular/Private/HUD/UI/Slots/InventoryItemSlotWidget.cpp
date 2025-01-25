@@ -144,10 +144,10 @@ void UInventoryItemSlotWidget::CalculateItemSlotPositions(FVector2D size)
 	}
 	
 	const FVector2D Center(WidgetSize.X / 2.0f, WidgetSize.Y / 2.0f);
-	for (int32 i = 0; i < TotalItemWidgets; ++i)
+	for (int32 i = 0; i < UISettings.MaxItemWidgets; ++i)
 	{
 		FVector2D Position;
-		switch (WidgetsMethodLocation)
+		switch (UISettings.WidgetsMethodLocation)
 		{
 		case EWidgetsMethodLocation::Oval:
 			{
@@ -221,7 +221,7 @@ void UInventoryItemSlotWidget::SetRenderTargetMaterial(UTextureRenderTarget2D* R
 FVector2D UInventoryItemSlotWidget::CalculateOvalPosition(int32 Index, const FVector2D& Center,
                                                           float OvalWidth, float OvalHeight)
 {
-	float Angle = 2.0f * PI * Index / TotalItemWidgets;
+	float Angle = 2.0f * PI * Index / UISettings.MaxItemWidgets;
 	float X = Center.X + (OvalWidth / 2.0f) * FMath::Cos(Angle);
 	float Y = Center.Y + (OvalHeight / 2.0f) * FMath::Sin(Angle);
 	float PerspectiveFactor = 1.0f + 0.2f * FMath::Abs(FMath::Sin(Angle));
@@ -234,7 +234,7 @@ FVector2D UInventoryItemSlotWidget::CalculateSquarePosition(int32 Index, const F
                                                             float SquareWidth, float SquareHeight)
 {
 	float Perimeter = 2.0f * (SquareWidth + SquareHeight);
-	float StepLength = Perimeter / TotalItemWidgets;
+	float StepLength = Perimeter / UISettings.MaxItemWidgets;
 
 	float CurrentLength = StepLength * Index;
 	FVector2D Position;
@@ -271,7 +271,7 @@ FVector2D UInventoryItemSlotWidget::CalculateCirclePosition(int32 Index, const F
 	float HorizontalRadius = FMath::Min(Radius, MaxHorizontalRadius);
 	float VerticalRadius = FMath::Min(Radius, MaxVerticalRadius);
 	
-	float TotalWidgets = TotalItemWidgets > 0 ? TotalItemWidgets : 1;
+	float TotalWidgets = UISettings.MaxItemWidgets > 0 ? UISettings.MaxItemWidgets : 1;
 	float AngleStep = 360.0f / TotalWidgets;
 	
 	float Angle = AngleStep * Index;

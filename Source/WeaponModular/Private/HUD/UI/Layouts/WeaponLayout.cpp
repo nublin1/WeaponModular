@@ -72,7 +72,6 @@ void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInv
 			{				
 				NewInventoryItemSlotsWidget->CalculateItemSlotPositions(NewInventoryItemSlotsWidget->GetCachedGeometry().Size);
 				ScaleBox->SetVisibility(ESlateVisibility::Collapsed);
-				
 				FTimerHandle* FoundHandle = ActiveTimers.Find(NewInventoryItemSlotsWidget);
 				if (FoundHandle)
 				{
@@ -81,7 +80,7 @@ void UWeaponLayout::AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInv
 				}
 			}
 		},
-		0.1f, 
+		0.01f, 
 		true  
 	);
 
