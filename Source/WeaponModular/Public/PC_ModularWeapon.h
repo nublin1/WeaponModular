@@ -51,7 +51,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	FCameraSettings CameraSettings;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
-	FUISettings UISettings;
+	FUISettings  UISettings;
 	
 	//
 	int IndexSpawn = 0;

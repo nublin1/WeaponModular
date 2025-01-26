@@ -27,7 +27,9 @@ public:
 	//====================================================================
 	AInventorySceneRenderer();
 	virtual void OnConstruction(const FTransform& Transform) override;
-
+	
+	UFUNCTION(BlueprintCallable)
+	void Initialize();
 	UFUNCTION(BlueprintCallable)
 	void UpdateVisibleComponents();
 

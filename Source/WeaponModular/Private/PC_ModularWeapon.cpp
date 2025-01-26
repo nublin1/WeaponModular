@@ -80,10 +80,7 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	
 	RendererInstance->SetRotationSettings(RotationSettings);
 	RendererInstance->SetCameraSettings(CameraSettings);
-	RendererInstance->CaptureComponent->AddRelativeLocation(CameraSettings.InitialRelativeLocation);
-	RendererInstance->CaptureComponent->ProjectionType = CameraSettings.CameraProjectionMode;
-	RendererInstance->CaptureComponent->OrthoWidth = CameraSettings.OrthoWidth;
-	RendererInstance->CaptureComponent->FOVAngle = CameraSettings.FOVAngle;
+	RendererInstance->Initialize();
 	RendererInstance->CaptureComponent->TextureTarget = RenderTarget;
 	
 	//RendererInstance->ChildComponent->DestroyChildActor();

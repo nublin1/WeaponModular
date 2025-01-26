@@ -29,6 +29,8 @@ struct FCameraSettings
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bReverseWeapon = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector InitialRelativeLocation = FVector(-50.0f, 0.0f, 0.0f);
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TEnumAsByte<ECameraProjectionMode::Type> CameraProjectionMode = ECameraProjectionMode::Type::Perspective;

@@ -35,7 +35,21 @@ void AInventorySceneRenderer::BeginPlay()
 	Super::BeginPlay();
 
 	UpdateVisibleComponents();
- }
+}
+
+void AInventorySceneRenderer::Initialize()
+{
+	CaptureComponent->AddRelativeLocation(CameraSettings.InitialRelativeLocation);
+	if (CameraSettings.bReverseWeapon)
+	{
+		auto Rotation = ChildComponent->GetComponentRotation();
+		ChildComponent->SetRelativeRotation(FRotator(Rotation.Yaw, Rotation.Pitch+180.0f, Rotation.Roll));
+	}
+	
+	CaptureComponent->ProjectionType = CameraSettings.CameraProjectionMode;
+	CaptureComponent->OrthoWidth = CameraSettings.OrthoWidth;
+	CaptureComponent->FOVAngle = CameraSettings.FOVAngle;
+}
 
 void AInventorySceneRenderer::UpdateVisibleComponents()
 {

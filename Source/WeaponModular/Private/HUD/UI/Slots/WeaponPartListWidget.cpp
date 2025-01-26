@@ -47,11 +47,9 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 				{
 					TextureSize.X = Texture2D->GetSizeX();
 					TextureSize.Y = Texture2D->GetSizeY();
-
 					//UE_LOG(LogTemp, Log, TEXT("Texture Size: Width=%d, Height=%d"), TextureWidth, TextureHeight);
 				}
 			}
-			
 			
 			FSlateBrush Brush;
 			UMaterialInterface* Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(),

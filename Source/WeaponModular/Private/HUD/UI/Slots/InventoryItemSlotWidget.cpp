@@ -346,7 +346,6 @@ void UInventoryItemSlotWidget::CalculateLineToDraw(UItemPartWidget* ItemPartWidg
 		
 	ItemPartWidget->SetBrushTargetPoint(EndPoint);
 	WBP_LineDrawer->AddLineToDraw(Name, StartPoint, EndPoint, LineColor, LineThickness);
-	
 }
 
 void UInventoryItemSlotWidget::ListButtonClick(UItemPartWidget* FromWidget)
