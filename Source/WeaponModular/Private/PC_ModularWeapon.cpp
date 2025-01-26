@@ -89,9 +89,9 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	RendererInstance->UpdateVisibleComponents();
 
 	TObjectPtr<UInventoryItemSlotWidget> InventoryItemSlotWidget;
-	if (WData->LinkedInventoryItemSlotWidget)
+	if (WData->LinkedInventoryItemSlotWidgetClass)
 	{
-		InventoryItemSlotWidget = CreateWidget<UInventoryItemSlotWidget>(GetWorld(), WData->LinkedInventoryItemSlotWidget);
+		InventoryItemSlotWidget = CreateWidget<UInventoryItemSlotWidget>(GetWorld(), WData->LinkedInventoryItemSlotWidgetClass);
 	}
 	else
 	{

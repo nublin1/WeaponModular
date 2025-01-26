@@ -90,7 +90,7 @@ void UInventoryItemSlotWidget::ComparisonAndUpdateItemPartWidget(UItemPartWidget
 
 	if (!Result)
 		return;
-
+	
 	Widget->SetTargetMarkerLinked(AttachmentPoint);
 	Widget->UpdateVisual();
 }

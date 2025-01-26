@@ -54,6 +54,7 @@ public:
 	UWeaponPartListWidget* GetPartListWidget() {return LinkedWeaponPartListWidget;}
 	USC_WeaponPartAttachmentPoint* GetTargetMarkerLinked() {return TargetMarkerLinked;}
 	FWeaponPartTypeProperties GetWidgetWeaponPartType() {return WidgetWeaponPartType;}
+	UMaterialInterface* GetIconMaterial() {return IconMaterial;}
 
 	//Setters
 	void SetWidgetTable(UDataTable* NewDataTable) { WidgetTable = NewDataTable;	}
@@ -61,6 +62,7 @@ public:
 	void SetWidgetWeaponPartType(FWeaponPartTypeProperties NewWeaponPartTypeProperties) {WidgetWeaponPartType = NewWeaponPartTypeProperties;}
 	void SetBrushTargetPoint(FVector2D NewBrushTargetPoint) { BrushTargetPoint = NewBrushTargetPoint; }
 	void SetBrushTexture(USlateBrushAsset* NewBrushTexture) { BrushTexture = NewBrushTexture; }
+	void SetIconMaterial(UMaterialInterface* NewMaterial) { IconMaterial = NewMaterial; }
 
 protected:
 	//====================================================================
