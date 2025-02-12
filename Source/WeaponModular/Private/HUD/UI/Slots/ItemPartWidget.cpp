@@ -19,11 +19,7 @@ void UItemPartWidget::NativeOnInitialized()
 
 UItemPartWidget::UItemPartWidget()
 {
-	static ConstructorHelpers::FObjectFinder<UMaterialInterface> MaterialFinder(TEXT("/Game/ModularWeapon/Weapon/Mat_IconMaterial.Mat_IconMaterial"));
-	if (MaterialFinder.Succeeded())
-	{
-		IconMaterial = MaterialFinder.Object;
-	}
+	
 }
 
 void UItemPartWidget::UpdateVisual()

@@ -90,12 +90,7 @@ protected:
 	TObjectPtr<ULineDrawerWidget> WBP_LineDrawer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
 	TArray<TObjectPtr<UItemPartWidget>> PartWidgets;
-
-	// Classes
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
-	TSubclassOf<UItemPartWidget> ItemPartWidgetClass;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UMaterialInterface> RenderTargetMaterial;
+	
 
 	// Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

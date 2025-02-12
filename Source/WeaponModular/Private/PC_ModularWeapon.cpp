@@ -95,17 +95,18 @@ void APC_ModularWeapon::SpawnInventorySceneRenderers(FWeaponData* WData)
 	}
 	else
 	{
-		if(!InventoryItemSlotWidgetClass)
+		if(!UISettings.InventoryItemSlotWidgetClass)
 			return;
 		
-		InventoryItemSlotWidget = CreateWidget<UInventoryItemSlotWidget>(GetWorld(), InventoryItemSlotWidgetClass);
+		InventoryItemSlotWidget = CreateWidget<UInventoryItemSlotWidget>(GetWorld(), UISettings.InventoryItemSlotWidgetClass);
 	}
 
 	if (!InventoryItemSlotWidget)
 		return;
 	
 	MainHUDContainer->WeaponLayout->AddInventoryItemSlotsWidget(InventoryItemSlotWidget);
+	InventoryItemSlotWidget->SetUISettins(UISettings);
 	InventoryItemSlotWidget->SetRenderTargetMaterial(RenderTarget);
 	InventoryItemSlotWidget->SetRotationSettings(RotationSettings);
-	InventoryItemSlotWidget->SetUISettins(UISettings);
+	
 }

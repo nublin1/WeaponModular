@@ -54,7 +54,7 @@ public:
 	UWeaponPartListWidget* GetPartListWidget() {return LinkedWeaponPartListWidget;}
 	USC_WeaponPartAttachmentPoint* GetTargetMarkerLinked() {return TargetMarkerLinked;}
 	FWeaponPartTypeProperties GetWidgetWeaponPartType() {return WidgetWeaponPartType;}
-	UMaterialInterface* GetIconMaterial() {return IconMaterial;}
+	
 
 	//Setters
 	void SetWidgetTable(UDataTable* NewDataTable) { WidgetTable = NewDataTable;	}

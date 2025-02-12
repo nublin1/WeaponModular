@@ -4,6 +4,9 @@
 #include "Engine/DataTable.h"
 #include "Settings.generated.h"
 
+class UItemPartWidget;
+class UInventoryItemSlotWidget;
+
 UENUM(Blueprintable)
 enum class EWidgetsMethodLocation: uint8
 {
@@ -52,10 +55,17 @@ struct FUISettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 MaxItemWidgets = 12;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EWidgetsMethodLocation WidgetsMethodLocation = EWidgetsMethodLocation::Oval;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UInventoryItemSlotWidget> InventoryItemSlotWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UMaterialInterface> BaseRenderTargetMaterial;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UItemPartWidget> ItemPartWidgetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UMaterialInterface> IconMaterial;
 };

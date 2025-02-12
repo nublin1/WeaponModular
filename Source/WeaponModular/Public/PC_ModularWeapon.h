@@ -37,14 +37,11 @@ protected:
 	TObjectPtr<UDataTable> WeaponTable;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AInventorySceneRenderer> InventorySceneRendererClass;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UInventoryItemSlotWidget> InventoryItemSlotWidgetClass;
-
+	
 	// Data
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<TObjectPtr<AInventorySceneRenderer>> InventorySceneRendererList;
 	
-
 	//
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	FRotationSettings RotationSettings;

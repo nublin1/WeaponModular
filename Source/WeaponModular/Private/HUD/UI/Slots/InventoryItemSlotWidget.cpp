@@ -90,7 +90,8 @@ void UInventoryItemSlotWidget::ComparisonAndUpdateItemPartWidget(UItemPartWidget
 
 	if (!Result)
 		return;
-	
+
+	Widget->SetIconMaterial(UISettings.IconMaterial);
 	Widget->SetTargetMarkerLinked(AttachmentPoint);
 	Widget->UpdateVisual();
 }
@@ -115,6 +116,7 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 			NewItemWidget->SetTargetMarkerLinked(AttachmentPoint);
 			NewItemWidget->SetWidgetTable(static_cast<UDataTable*>(AttachmentPoint->GetUsableTable()));
 			NewItemWidget->SetWidgetWeaponPartType(AttachmentPoint->WeaponPointType);
+			NewItemWidget->SetIconMaterial(UISettings.IconMaterial);
 			NewItemWidget->UpdateVisual();
 
 			NewItemWidget->OnListButtonClick.AddDynamic(this, &UInventoryItemSlotWidget::ListButtonClick);
@@ -190,7 +192,7 @@ TArray<FVector2D> UInventoryItemSlotWidget::GetItemsWidgetPositions()
 
 void UInventoryItemSlotWidget::SetRenderTargetMaterial(UTextureRenderTarget2D* RenderTarget)
 {
-	if (!RenderTargetMaterial) 
+	if (!UISettings.BaseRenderTargetMaterial) 
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Base material is null!"));
 		return;
@@ -202,7 +204,7 @@ void UInventoryItemSlotWidget::SetRenderTargetMaterial(UTextureRenderTarget2D* R
 		return;
 	}
 	
-	UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(RenderTargetMaterial, this);
+	UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(UISettings.BaseRenderTargetMaterial , this);
 	if (!DynamicMaterial)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Failed to create dynamic material!"));
@@ -287,13 +289,13 @@ FVector2D UInventoryItemSlotWidget::CalculateCirclePosition(int32 Index, const F
 
 UItemPartWidget* UInventoryItemSlotWidget::CreateItemPartWidget()
 {
-	if (!ItemPartWidgetClass)
+	if (!UISettings.ItemPartWidgetClass)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("ItemPartWidgetClass is not set!"));
 		return nullptr;
 	}
 
-	return CreateWidget<UItemPartWidget>(GetWorld(), ItemPartWidgetClass);
+	return CreateWidget<UItemPartWidget>(GetWorld(), UISettings.ItemPartWidgetClass);
 }
 
 int32 UInventoryItemSlotWidget::FindIndexOfClosestAvaiableWidgetPosition(FVector2D ComparedPosition)
