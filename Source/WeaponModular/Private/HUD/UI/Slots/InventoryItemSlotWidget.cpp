@@ -14,6 +14,7 @@
 #include "HUD/UI/Slots/ItemPartWidget.h"
 #include "HUD/UI/Slots/LineDrawerWidget.h"
 #include "Utilities/UtilitiesRender.h"
+#include "WeaponModular/Inv/AInventorySceneRenderer.h"
 
 
 void UInventoryItemSlotWidget::NativeConstruct()
@@ -98,7 +99,9 @@ void UInventoryItemSlotWidget::ComparisonAndUpdateItemPartWidget(UItemPartWidget
 
 void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* AttachmentPoint)
 {
-	auto PosInScreen = CalculateCoordinates(CaptureComponent, AttachmentPoint->GetComponentLocation());
+	if (!LinkedSceneRenderer)
+		return;
+	auto PosInScreen = CalculateCoordinates(LinkedSceneRenderer->CaptureComponent, AttachmentPoint->GetComponentLocation());
 	auto Index = FindIndexOfClosestAvaiableWidgetPosition(PosInScreen);
 	if (Index < 0)
 		return;
@@ -328,7 +331,7 @@ FVector2D UInventoryItemSlotWidget::CalculateCoordinates(USceneCaptureComponent2
 
 void UInventoryItemSlotWidget::CalculateLineToDraw(UItemPartWidget* ItemPartWidget)
 {
-	if (!CaptureComponent || !WBP_LineDrawer)
+	if (!LinkedSceneRenderer || !LinkedSceneRenderer->CaptureComponent || !WBP_LineDrawer)
 		return;
 	
 	auto AttachPoint = ItemPartWidget->GetTargetMarkerLinked();
@@ -342,7 +345,7 @@ void UInventoryItemSlotWidget::CalculateLineToDraw(UItemPartWidget* ItemPartWidg
 	auto Position = ItemPartWidget->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0,0));
 	auto Size = ItemPartWidget->GetMainItemIconWidget()->GetCachedGeometry().GetLocalSize();
 	auto StartPoint = Position + FVector2D(Size.X / 2.0f, Size.Y / 2.0f);
-	auto EndPoint= CalculateCoordinates(CaptureComponent, AttachPoint->GetComponentLocation());
+	auto EndPoint= CalculateCoordinates(LinkedSceneRenderer->CaptureComponent, AttachPoint->GetComponentLocation());
 	auto LineColor = AttachPoint->GetLineColor();
 	auto LineThickness = AttachPoint->GetLineThickness();
 		
@@ -383,6 +386,11 @@ void UInventoryItemSlotWidget::ListButtonClick(UItemPartWidget* FromWidget)
 
 void UInventoryItemSlotWidget::UpdateWidgetsPositions()
 {
+	if (!LinkedSceneRenderer) 
+	{
+		return;
+	}
+
 	const FVector2D WidgetSize = GetCachedGeometry().GetLocalSize();
 	const FVector2D Center(WidgetSize.X / 2.0f, WidgetSize.Y / 2.0f);
 	
@@ -390,38 +398,36 @@ void UInventoryItemSlotWidget::UpdateWidgetsPositions()
 	{
 		if (!ItemsWidgetPositions[i].ItemPartWidgetLinked)
 			continue;
-		
-		if  (UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(ItemsWidgetPositions[i].ItemPartWidgetLinked->Slot))
+        
+		if (UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(ItemsWidgetPositions[i].ItemPartWidgetLinked->Slot))
 		{
 			FVector2D BasePosition = ItemsWidgetPositions[i].SlotPosition;
-			
-			float DepthFactor = 0.0f;
-			float Radius = (Center.X - BasePosition.X); 
-			
-			FVector2D NewPosition = Calculate3DRotationPosition( Radius, RotationAngle, DepthFactor, BasePosition);
-			
-			//float ScaleFactor = FMath::Lerp(0.5f, 1.0f, (DepthFactor + 1.0f) / 2.0f);
-			//UE_LOG(LogTemp, Warning, TEXT("ScaleFactor: %f"), ScaleFactor);
-
+			FVector2D Radius = FVector2D(Center.X - BasePosition.X, Center.Y - BasePosition.Y);
+			float DepthFactor  = 0;
+            
+			FVector2D NewPosition = Calculate3DRotationPosition(
+				Radius, 
+				RotationAngle,
+				DepthFactor, 
+				BasePosition
+			);
+            
 			CanvasPanelSlot->SetPosition(NewPosition);
-			//ItemsWidgetPositions[i].ItemPartWidgetLinked->SetDesiredSizeInViewport(FVector2D(10.0f, 10.0f));
-			//CanvasPanelSlot->SetSize( FVector2D(10.0f, 10.0f));
-			
-			int32 DepthZOrder = FMath::RoundToInt((DepthFactor + 1.0f) * 100.0f);
-			CanvasPanelSlot->SetZOrder(DepthZOrder);
 		}
 	}
 }
 
-FVector2D UInventoryItemSlotWidget::Calculate3DRotationPosition(float Radius, float AngleOffset, float& OutDepth, FVector2D& BasePosition)
+FVector2D UInventoryItemSlotWidget::Calculate3DRotationPosition(FVector2D Radius, FVector2D AngleOffset, float& OutDepth, FVector2D& BasePosition)
 {
-	float Radians = FMath::DegreesToRadians(AngleOffset);
-	float OffsetX = Radius * FMath::Cos(Radians);
-
-	//Depth (Z axis) for perspective
-	OutDepth = FMath::Sin(Radians); // Value from -1.0 (background) to 1.0 (foreground)	
+	float RadiansX = FMath::DegreesToRadians(AngleOffset.X);
+	float OffsetX = Radius.X * FMath::Cos(RadiansX);
 	
-	return FVector2D(BasePosition.X + Radius - OffsetX, BasePosition.Y);
+	OutDepth = FMath::Sin(RadiansX);
+
+	return FVector2D(
+		BasePosition.X + Radius.X - OffsetX,
+		BasePosition.Y
+	);
 }
 
 void UInventoryItemSlotWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -479,8 +485,11 @@ FReply UInventoryItemSlotWidget::NativeOnMouseMove(const FGeometry& InGeometry, 
 		}
 
 		float DeltaTime = GetWorld()->GetDeltaSeconds();
-		RotationAngle += Delta.X * RotationSettings.RotationSpeed * DeltaTime;
-		RotationAngle = FMath::Fmod(RotationAngle, 360.0f);
+		RotationAngle.X += Delta.X * RotationSettings.RotationSpeed * DeltaTime;
+		RotationAngle.X = FMath::Clamp(RotationAngle.X, RotationSettings.MinYaw, RotationSettings.MaxYaw);
+		RotationAngle.Y += Delta.Y * RotationSettings.RotationSpeed * DeltaTime;
+		RotationAngle.Y = FMath::Clamp(RotationAngle.Y, RotationSettings.MinRoll, RotationSettings.MaxRoll);
+		
 
 		UpdateWidgetsPositions();
 	}

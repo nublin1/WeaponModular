@@ -8,6 +8,7 @@
 
 #include "InventoryItemSlotWidget.generated.h"
 
+class AInventorySceneRenderer;
 class UScaleBox;
 class USC_WeaponPartAttachmentPoint;
 class ULineDrawerWidget;
@@ -30,7 +31,7 @@ struct FItemsWidgetSlot
 	GENERATED_BODY()
 
 	UPROPERTY()
-	FVector2D SlotPosition;
+	FVector2D SlotPosition = FVector2D::ZeroVector;
 	UPROPERTY()
 	UItemPartWidget* ItemPartWidgetLinked = nullptr;
 };
@@ -93,8 +94,8 @@ protected:
 	
 
 	// Data
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<USceneCaptureComponent2D> CaptureComponent;
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<AInventorySceneRenderer> LinkedSceneRenderer;
 	UPROPERTY()
 	bool bIsDragging = false;
 	UPROPERTY()
@@ -109,7 +110,7 @@ protected:
 	TArray<FItemsWidgetSlot> ItemsWidgetPositions;
 
 	// Rotation
-	float RotationAngle = 0.0f;	
+	FVector2D RotationAngle = FVector2D::ZeroVector;	
 	FRotationSettings RotationSettings;	
 
 	//====================================================================
@@ -138,7 +139,7 @@ protected:
 	UFUNCTION()
 	void UpdateWidgetsPositions();
 	UFUNCTION()
-	FVector2D Calculate3DRotationPosition( float Radius, float AngleOffset, float& OutDepth, FVector2D& BasePosition);
+	FVector2D Calculate3DRotationPosition(FVector2D Radius, FVector2D AngleOffset, float& OutDepth, FVector2D& BasePosition);
 	
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;	
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;

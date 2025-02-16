@@ -3,13 +3,13 @@
 
 #include "HUD/UI/Slots/WeaponPartListWidget.h"
 
+#include "PC_ModularWeapon.h"
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Data/WeaponPartData.h"
 #include "Components/VerticalBox.h"
 #include "HUD/UI/Slots/ItemPartIconWidget.h"
-
 
 
 UWeaponPartListWidget::UWeaponPartListWidget()
@@ -50,13 +50,14 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 					//UE_LOG(LogTemp, Log, TEXT("Texture Size: Width=%d, Height=%d"), TextureWidth, TextureHeight);
 				}
 			}
+
+			auto PC =Cast<APC_ModularWeapon>(GetOwningLocalPlayer()->GetPlayerController(GetWorld()));
+			
 			
 			FSlateBrush Brush;
-			UMaterialInterface* Material = Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(),
-				nullptr, TEXT("/Game/ModularWeapon/Weapon/Mat_IconMaterial.Mat_IconMaterial")));
-			if (Material)
+			if (PC->GetUISettings().IconMaterial)
 			{
-				UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
+				UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(PC->GetUISettings().IconMaterial, this);
 				DynamicMaterial->SetTextureParameterValue(FName("BaseTexture"), ListOfParts[i].BaseWeaponPartData.VisualProperties.Texture);
 				Brush.SetResourceObject(DynamicMaterial);
 			}
@@ -66,7 +67,6 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 			ItemPartIconWidget->GetContent_Image()->SetOpacity(1.0f);
 			FText Name = FText::FromString(ListOfParts[i].Name.ToString());
 			ItemPartIconWidget->GetContent_Text_Name()->SetText(Name);
-			
 			
 			WeaponPartList_VerticalBox->AddChildToVerticalBox(ItemPartIconWidget);
 			ItemPartIconToWeaponPartMap.Add(ItemPartIconWidget, ListOfParts[i]);

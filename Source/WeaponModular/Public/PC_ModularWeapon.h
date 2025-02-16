@@ -25,6 +25,10 @@ public:
 	//====================================================================
 	APC_ModularWeapon();
 
+	//Getters
+	UFUNCTION()
+	FUISettings GetUISettings() { return UISettings; }
+
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
@@ -48,7 +52,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	FCameraSettings CameraSettings;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
-	FUISettings  UISettings;
+	FUISettings UISettings;
 	
 	//
 	int IndexSpawn = 0;

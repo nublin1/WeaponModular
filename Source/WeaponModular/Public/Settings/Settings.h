@@ -24,6 +24,14 @@ struct FRotationSettings
 	bool bCanRotate = true;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float RotationSpeed = 30.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MinYaw = -60.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MaxYaw = 60.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MinRoll = -60.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MaxRoll = 60.0f;
 };
 
 USTRUCT(Blueprintable)

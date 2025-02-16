@@ -69,12 +69,26 @@ void AInventorySceneRenderer::UpdateVisibleComponents()
 void AInventorySceneRenderer::RotateObject(FVector2D Delta)
 {
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
-	FRotator NewRotation = GetActorRotation();
-	NewRotation.Yaw += Delta.X * RotationSettings.RotationSpeed * DeltaTime; 
-
-	if (ChildComponent)
-		if (ChildComponent->GetChildActor())
-			ChildComponent->GetChildActor()->AddActorWorldRotation(NewRotation);
+    
+	if (ChildComponent && ChildComponent->GetChildActor())
+	{
+		FRotator ChildRotation = ChildComponent->GetChildActor()->GetActorRotation();
+		float DeltaYaw = Delta.X * RotationSettings.RotationSpeed * DeltaTime;
+		float DeltaRoll = Delta.Y * RotationSettings.RotationSpeed * DeltaTime;
+        
+		ChildRotation.Yaw = FMath::Clamp(
+			ChildRotation.Yaw + DeltaYaw,
+			RotationSettings.MinYaw,
+			RotationSettings.MaxYaw
+			);
+		ChildRotation.Roll = FMath::Clamp(
+			ChildRotation.Roll + DeltaRoll,
+			RotationSettings.MinRoll,
+			RotationSettings.MaxRoll
+			);
+        
+		ChildComponent->GetChildActor()->SetActorRotation(ChildRotation);
+	}
 }
 
 void AInventorySceneRenderer::ZoomObject(float Delta)

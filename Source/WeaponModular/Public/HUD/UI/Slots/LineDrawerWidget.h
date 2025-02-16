@@ -16,10 +16,10 @@ struct FLineDrawInfo
 	FVector4 LineCoordinates; 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
-	FLinearColor LineColor;
+	FLinearColor LineColor = FLinearColor::White;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Line")
-	float LineThickness;
+	float LineThickness = 1.0f;
 };
 
 UCLASS()
