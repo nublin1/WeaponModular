@@ -29,9 +29,9 @@ struct FRotationSettings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float MaxYaw = 60.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MinRoll = -60.0f;
+	float MinPitch = -45.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MaxRoll = 60.0f;
+	float MaxPitch = 45.0f;
 };
 
 USTRUCT(Blueprintable)

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WeaponPartListWidget.h"
 #include "HUD/UI/BUIUserWidget.h"
 #include "Settings/Settings.h"
 
@@ -32,6 +33,8 @@ struct FItemsWidgetSlot
 
 	UPROPERTY()
 	FVector2D SlotPosition = FVector2D::ZeroVector;
+	UPROPERTY()
+	FVector2D ListSlotPosition = FVector2D::ZeroVector;
 	UPROPERTY()
 	UItemPartWidget* ItemPartWidgetLinked = nullptr;
 };
@@ -107,7 +110,7 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 	FUISettings UISettings;
 	UPROPERTY()
-	TArray<FItemsWidgetSlot> ItemsWidgetPositions;
+	TArray<FItemsWidgetSlot> ItemWidgetsArray;
 
 	// Rotation
 	FVector2D RotationAngle = FVector2D::ZeroVector;	
@@ -133,6 +136,7 @@ protected:
 	FVector2D CalculateCoordinates(USceneCaptureComponent2D* SceneCaptureComponent, FVector WorldPosition);
 	UFUNCTION(BlueprintCallable)
 	void CalculateLineToDraw(UItemPartWidget* ItemPartWidget);
+	UWeaponPartListWidget* CreateAndPositionListWidget(UItemPartWidget* FromWidget);
 
 	UFUNCTION()
 	void ListButtonClick(UItemPartWidget* FromWidget);

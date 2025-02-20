@@ -54,7 +54,7 @@ void UInventoryItemSlotWidget::NativeConstruct()
 
 void UInventoryItemSlotWidget::InitializeWidgetPositions()
 {
-	ItemsWidgetPositions.Empty();
+	ItemWidgetsArray.Empty();
 	for (auto ItemPartWidget : PartWidgets)
 	{
 		if (UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(ItemPartWidget->Slot))
@@ -62,7 +62,7 @@ void UInventoryItemSlotWidget::InitializeWidgetPositions()
 			FItemsWidgetSlot ItemsWidgetSlot;
 			ItemsWidgetSlot.SlotPosition = CanvasPanelSlot->GetPosition();
 			ItemsWidgetSlot.ItemPartWidgetLinked = ItemPartWidget;
-			ItemsWidgetPositions.Add(ItemsWidgetSlot);
+			ItemWidgetsArray.Add(ItemsWidgetSlot);
 		}
 	}
 }
@@ -95,6 +95,9 @@ void UInventoryItemSlotWidget::ComparisonAndUpdateItemPartWidget(UItemPartWidget
 	Widget->SetIconMaterial(UISettings.IconMaterial);
 	Widget->SetTargetMarkerLinked(AttachmentPoint);
 	Widget->UpdateVisual();
+
+	ForceLayoutPrepass();
+	CreateAndPositionListWidget(Widget);
 }
 
 void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* AttachmentPoint)
@@ -111,11 +114,11 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 		TObjectPtr<UCanvasPanelSlot> CanvasSlot = ContentPanel->AddChildToCanvas(NewItemWidget);
 		if (CanvasSlot)
 		{
-			CanvasSlot->SetPosition(ItemsWidgetPositions[Index].SlotPosition);
+			CanvasSlot->SetPosition(ItemWidgetsArray[Index].SlotPosition);
 			CanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
 			CanvasSlot->SetAutoSize(true);
 				
-			ItemsWidgetPositions[Index].ItemPartWidgetLinked = NewItemWidget;
+			ItemWidgetsArray[Index].ItemPartWidgetLinked = NewItemWidget;
 			NewItemWidget->SetTargetMarkerLinked(AttachmentPoint);
 			NewItemWidget->SetWidgetTable(static_cast<UDataTable*>(AttachmentPoint->GetUsableTable()));
 			NewItemWidget->SetWidgetWeaponPartType(AttachmentPoint->WeaponPointType);
@@ -128,6 +131,11 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 			CalculateLineToDraw(NewItemWidget);
 			if (OnItemPartWidgetAdded.IsBound())
 				OnItemPartWidgetAdded.Broadcast(NewItemWidget);
+
+			ForceLayoutPrepass();
+			
+			CreateAndPositionListWidget(NewItemWidget);
+			
 		}
 	}
 }
@@ -179,14 +187,14 @@ void UInventoryItemSlotWidget::CalculateItemSlotPositions(FVector2D size)
 
 		FItemsWidgetSlot NewItemsWidgetSlot;
 		NewItemsWidgetSlot.SlotPosition = Position;
-		ItemsWidgetPositions.Add(NewItemsWidgetSlot);
+		ItemWidgetsArray.Add(NewItemsWidgetSlot);
 	}
 }
 
 TArray<FVector2D> UInventoryItemSlotWidget::GetItemsWidgetPositions()
 {
 	TArray<FVector2D> Result;
-	for (auto Element : ItemsWidgetPositions)
+	for (auto Element : ItemWidgetsArray)
 	{
 		Result.Add(Element.SlotPosition);
 	}
@@ -306,10 +314,10 @@ int32 UInventoryItemSlotWidget::FindIndexOfClosestAvaiableWidgetPosition(FVector
 	int32 Index = -1;
 	float ClosestDistance = FLT_MAX;
 	
-	for (int32 i = 0; i < ItemsWidgetPositions.Num(); ++i)
+	for (int32 i = 0; i < ItemWidgetsArray.Num(); ++i)
 	{
-		float Distance = FVector2D::Distance(ComparedPosition, ItemsWidgetPositions[i].SlotPosition);
-		if (Distance < ClosestDistance &&  ItemsWidgetPositions[i].ItemPartWidgetLinked == nullptr)
+		float Distance = FVector2D::Distance(ComparedPosition, ItemWidgetsArray[i].SlotPosition);
+		if (Distance < ClosestDistance &&  ItemWidgetsArray[i].ItemPartWidgetLinked == nullptr)
 		{
 			ClosestDistance = Distance;
 			Index = i;
@@ -353,23 +361,45 @@ void UInventoryItemSlotWidget::CalculateLineToDraw(UItemPartWidget* ItemPartWidg
 	WBP_LineDrawer->AddLineToDraw(Name, StartPoint, EndPoint, LineColor, LineThickness);
 }
 
+UWeaponPartListWidget* UInventoryItemSlotWidget::CreateAndPositionListWidget(UItemPartWidget* FromWidget)
+{
+	auto ListWidget = FromWidget->CreateWeaponPartListWidget();
+	ListWidget->SetVisibility(ESlateVisibility::Collapsed);
+
+	FVector2D RenderCurrentPosition = Cast<UCanvasPanelSlot>(FromWidget->Slot)->GetPosition();
+	//FVector2D RenderCurrentPosition = FromWidget->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0.0f, 0.0f));
+	FVector2D LocalSize = FromWidget->GetDesiredSize();
+	FVector2D ModPosition = FVector2D(RenderCurrentPosition.X, RenderCurrentPosition.Y + LocalSize.Y);
+	FVector2D ScrollSize = ListWidget->GetWeaponPartList_ScrollBox()->GetScrollbarThickness();
+
+	if (TObjectPtr<UCanvasPanelSlot> ListWidgetCanvasSlot = ContentPanel->AddChildToCanvas(ListWidget))
+	{
+		ListWidgetCanvasSlot->SetPosition(ModPosition);
+		ListWidgetCanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
+		ListWidgetCanvasSlot->SetSize(FVector2D(LocalSize.X + ScrollSize.X, LocalSize.Y));
+	}
+
+	// Сохраняем позицию для виджета
+	for (auto& ItemWidgetSlot : ItemWidgetsArray)
+	{
+		if (!ItemWidgetSlot.ItemPartWidgetLinked)
+			continue;
+
+		if (ItemWidgetSlot.ItemPartWidgetLinked == FromWidget)
+		{
+			ItemWidgetSlot.ListSlotPosition = ModPosition;
+			break;
+		}
+	}
+
+	return ListWidget;
+}
+
 void UInventoryItemSlotWidget::ListButtonClick(UItemPartWidget* FromWidget)
 {
 	if (!FromWidget->GetPartListWidget())
 	{
-		auto ListWidget= FromWidget->CreateWeaponPartListWidget();
-		
-		FVector2D RenderCurrentPosition = FromWidget->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D(0.0f, 0.0f));
-		FVector2D LocalSize = FromWidget->GetDesiredSize();
-		FVector2D ModPosition = FVector2D(RenderCurrentPosition.X, RenderCurrentPosition.Y + LocalSize.Y);
-		FVector2D ScrollSize = ListWidget->GetWeaponPartList_ScrollBox()->GetScrollbarThickness();
-
-		if (TObjectPtr<UCanvasPanelSlot> ListWidgetCanvasSlot = ContentPanel->AddChildToCanvas(ListWidget))
-		{
-			ListWidgetCanvasSlot->SetPosition(ModPosition);
-			ListWidgetCanvasSlot->SetAlignment(FVector2D(0.0f, 0.0f));
-			ListWidgetCanvasSlot->SetSize(FVector2D(LocalSize.X + ScrollSize.X, LocalSize.Y));
-		}
+		auto ListWidget = CreateAndPositionListWidget(FromWidget);
 	}
 	else
 	{
@@ -394,16 +424,16 @@ void UInventoryItemSlotWidget::UpdateWidgetsPositions()
 	const FVector2D WidgetSize = GetCachedGeometry().GetLocalSize();
 	const FVector2D Center(WidgetSize.X / 2.0f, WidgetSize.Y / 2.0f);
 	
-	for (int32 i = 0; i < ItemsWidgetPositions.Num(); ++i)
+	for (int32 i = 0; i < ItemWidgetsArray.Num(); ++i)
 	{
-		if (!ItemsWidgetPositions[i].ItemPartWidgetLinked)
+		if (!ItemWidgetsArray[i].ItemPartWidgetLinked)
 			continue;
         
-		if (UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(ItemsWidgetPositions[i].ItemPartWidgetLinked->Slot))
+		if (UCanvasPanelSlot* CanvasPanelSlot = Cast<UCanvasPanelSlot>(ItemWidgetsArray[i].ItemPartWidgetLinked->Slot))
 		{
-			FVector2D BasePosition = ItemsWidgetPositions[i].SlotPosition;
+			FVector2D BasePosition = ItemWidgetsArray[i].SlotPosition;
 			FVector2D Radius = FVector2D(Center.X - BasePosition.X, Center.Y - BasePosition.Y);
-			float DepthFactor  = 0;
+			float DepthFactor = 0;
             
 			FVector2D NewPosition = Calculate3DRotationPosition(
 				Radius, 
@@ -413,6 +443,26 @@ void UInventoryItemSlotWidget::UpdateWidgetsPositions()
 			);
             
 			CanvasPanelSlot->SetPosition(NewPosition);
+
+			auto List =ItemWidgetsArray[i].ItemPartWidgetLinked->GetPartListWidget();
+			if (!List)
+				continue;
+
+			if (UCanvasPanelSlot* CanvasPanelSlotList = Cast<UCanvasPanelSlot>(List->Slot))
+			{
+				FVector2D BasePositionList = ItemWidgetsArray[i].ListSlotPosition;
+				FVector2D RadiusList = FVector2D(Center.X - BasePositionList.X, Center.Y - BasePositionList.Y);
+				float DepthFactorList = 0;
+
+				FVector2D ListNewPosition = Calculate3DRotationPosition(
+				RadiusList, 
+				RotationAngle,
+				DepthFactorList, 
+				BasePositionList
+				);
+
+				CanvasPanelSlotList->SetPosition(ListNewPosition);
+			}
 		}
 	}
 }
@@ -488,9 +538,8 @@ FReply UInventoryItemSlotWidget::NativeOnMouseMove(const FGeometry& InGeometry, 
 		RotationAngle.X += Delta.X * RotationSettings.RotationSpeed * DeltaTime;
 		RotationAngle.X = FMath::Clamp(RotationAngle.X, RotationSettings.MinYaw, RotationSettings.MaxYaw);
 		RotationAngle.Y += Delta.Y * RotationSettings.RotationSpeed * DeltaTime;
-		RotationAngle.Y = FMath::Clamp(RotationAngle.Y, RotationSettings.MinRoll, RotationSettings.MaxRoll);
+		RotationAngle.Y = FMath::Clamp(RotationAngle.Y, RotationSettings.MinPitch, RotationSettings.MaxPitch);
 		
-
 		UpdateWidgetsPositions();
 	}
 

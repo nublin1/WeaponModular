@@ -81,10 +81,10 @@ void AInventorySceneRenderer::RotateObject(FVector2D Delta)
 			RotationSettings.MinYaw,
 			RotationSettings.MaxYaw
 			);
-		ChildRotation.Roll = FMath::Clamp(
-			ChildRotation.Roll + DeltaRoll,
-			RotationSettings.MinRoll,
-			RotationSettings.MaxRoll
+		ChildRotation.Pitch = FMath::Clamp(
+			ChildRotation.Pitch + DeltaRoll,
+			RotationSettings.MinPitch,
+			RotationSettings.MaxPitch
 			);
         
 		ChildComponent->GetChildActor()->SetActorRotation(ChildRotation);
