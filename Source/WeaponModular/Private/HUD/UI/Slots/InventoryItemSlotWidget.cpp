@@ -536,9 +536,21 @@ FReply UInventoryItemSlotWidget::NativeOnMouseMove(const FGeometry& InGeometry, 
 
 		float DeltaTime = GetWorld()->GetDeltaSeconds();
 		RotationAngle.X += Delta.X * RotationSettings.RotationSpeed * DeltaTime;
-		RotationAngle.X = FMath::Clamp(RotationAngle.X, RotationSettings.MinYaw, RotationSettings.MaxYaw);
 		RotationAngle.Y += Delta.Y * RotationSettings.RotationSpeed * DeltaTime;
-		RotationAngle.Y = FMath::Clamp(RotationAngle.Y, RotationSettings.MinPitch, RotationSettings.MaxPitch);
+		
+		auto WrapAngle = [](float Angle, float Min, float Max) {
+			const float Range = Max - Min;
+			if (Range >= 360.0f) {
+				Angle = FMath::Fmod(Angle - Min, 360.0f);
+				return Angle + (Angle < 0 ? 360.0f : 0) + Min;
+			}
+			return FMath::Clamp(Angle, Min, Max);
+		};
+		
+		RotationAngle.X = WrapAngle(RotationAngle.X, RotationSettings.XAxisMinClamp, RotationSettings.XAxisMaxClamp);
+		RotationAngle.Y = WrapAngle(RotationAngle.Y, RotationSettings.YAxisMinClamp, RotationSettings.YAxisMaxClamp);
+
+		UE_LOG(LogTemp, Warning, TEXT("RotationAngle X: %f, RotationAngle Y: %f"), RotationAngle.X, RotationAngle.Y);
 		
 		UpdateWidgetsPositions();
 	}

@@ -69,25 +69,31 @@ void AInventorySceneRenderer::UpdateVisibleComponents()
 void AInventorySceneRenderer::RotateObject(FVector2D Delta)
 {
 	float DeltaTime = GetWorld()->GetDeltaSeconds();
-    
+
 	if (ChildComponent && ChildComponent->GetChildActor())
 	{
-		FRotator ChildRotation = ChildComponent->GetChildActor()->GetActorRotation();
-		float DeltaYaw = Delta.X * RotationSettings.RotationSpeed * DeltaTime;
-		float DeltaRoll = Delta.Y * RotationSettings.RotationSpeed * DeltaTime;
-        
-		ChildRotation.Yaw = FMath::Clamp(
-			ChildRotation.Yaw + DeltaYaw,
-			RotationSettings.MinYaw,
-			RotationSettings.MaxYaw
-			);
-		ChildRotation.Pitch = FMath::Clamp(
-			ChildRotation.Pitch + DeltaRoll,
-			RotationSettings.MinPitch,
-			RotationSettings.MaxPitch
-			);
-        
-		ChildComponent->GetChildActor()->SetActorRotation(ChildRotation);
+		AActor* ChildActor = ChildComponent->GetChildActor();
+		ChildComponent->AddRelativeLocation(-Relative);
+		
+		FRotator ChildRotation = ChildActor->GetActorRotation();
+		ChildRotation.Yaw += Delta.X * RotationSettings.RotationSpeed * DeltaTime;
+		ChildRotation.Pitch += Delta.Y * RotationSettings.RotationSpeed * DeltaTime;
+
+		auto WrapAngle = [](float Angle, float Min, float Max) {
+			const float Range = Max - Min;
+			if (Range >= 360.0f) {
+				Angle = FMath::Fmod(Angle - Min, 360.0f);
+				return Angle + (Angle < 0 ? 360.0f : 0) + Min;
+			}
+			return FMath::Clamp(Angle, Min, Max);
+		};
+
+		// 
+		ChildRotation.Yaw = WrapAngle(ChildRotation.Yaw, RotationSettings.XAxisMinClamp, RotationSettings.XAxisMaxClamp);
+		ChildRotation.Pitch = WrapAngle(ChildRotation.Pitch, RotationSettings.YAxisMinClamp, RotationSettings.YAxisMaxClamp);
+		
+		ChildComponent->SetRelativeRotation(ChildRotation);
+		ChildComponent->AddRelativeLocation(Relative);
 	}
 }
 
@@ -118,6 +124,40 @@ void AInventorySceneRenderer::ZoomObject(float Delta)
 		FVector ClampedOffsetVector = OffsetVector.GetSafeNormal() * ClampedDistance;
 	
 		CaptureComponent->SetWorldLocation(NewLocation);
+	}
+}
+
+void AInventorySceneRenderer::CenterChildComponent()
+{
+	if (!ChildComponent)
+		return;
+
+	AActor* ChildActor = ChildComponent->GetChildActor();
+	if (USkeletalMeshComponent* SkeletalMeshComponent = ChildActor->FindComponentByClass<USkeletalMeshComponent>())
+	{
+		FRotator OriginalRotation = ChildActor->GetActorRotation();
+		ChildActor->SetActorRotation(FRotator::ZeroRotator);
+		
+		FBox TotalBounds(ForceInit);
+		TotalBounds += SkeletalMeshComponent->Bounds.GetBox();
+		TArray<UStaticMeshComponent*> StaticMeshComponents;
+		ChildActor->GetComponents<UStaticMeshComponent>(StaticMeshComponents);
+
+		for (UStaticMeshComponent* StaticMeshComponent : StaticMeshComponents)
+		{
+			if (StaticMeshComponent && StaticMeshComponent->IsVisible())
+			{
+				TotalBounds += StaticMeshComponent->Bounds.GetBox();
+			}
+		}
+
+		if (!TotalBounds.IsValid)
+			return;
+
+		ChildActor->SetActorRotation(OriginalRotation);
+		Relative = ChildActor->GetActorLocation() - TotalBounds.GetCenter();
+		ChildActor->SetActorRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+		ChildActor->AddActorLocalOffset(Relative);
 	}
 }
 

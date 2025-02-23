@@ -25,13 +25,13 @@ struct FRotationSettings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float RotationSpeed = 30.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MinYaw = -60.0f;
+	float XAxisMinClamp = -60.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MaxYaw = 60.0f;
+	float XAxisMaxClamp = 60.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MinPitch = -45.0f;
+	float YAxisMinClamp = -45.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float MaxPitch = 45.0f;
+	float YAxisMaxClamp = 45.0f;
 };
 
 USTRUCT(Blueprintable)
@@ -50,6 +50,8 @@ struct FCameraSettings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float OrthoWidth = 140.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bCenterWeapon = true;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float CameraOffsetSpeed = 20.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

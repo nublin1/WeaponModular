@@ -9,6 +9,9 @@
 #include "Styling/SlateBrush.h"
 #include "SC_WeaponPartAttachmentPoint.generated.h"
 
+#pragma region Delegates
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaticMeshUpdated);
+#pragma endregion
 
 class UImage;
 
@@ -22,6 +25,9 @@ public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
+	UPROPERTY(BlueprintAssignable )
+	FOnStaticMeshUpdated OnStaticMeshUpdated;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FWeaponPartTypeProperties WeaponPointType;
 

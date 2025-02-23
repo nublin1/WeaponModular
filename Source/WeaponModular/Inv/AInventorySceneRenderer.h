@@ -47,11 +47,16 @@ protected:
 	virtual void RotateObject(FVector2D Delta);
 	UFUNCTION(BlueprintCallable)
 	virtual void ZoomObject(float Delta);
+	UFUNCTION(BlueprintCallable)
+	void CenterChildComponent();
 
 	UPROPERTY()
 	FRotationSettings RotationSettings;
 	UPROPERTY()
 	FCameraSettings CameraSettings;
+
+	UPROPERTY()
+	FVector Relative;
 	
 	
 public:	
