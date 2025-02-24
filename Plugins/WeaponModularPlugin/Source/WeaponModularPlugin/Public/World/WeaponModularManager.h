@@ -1,0 +1,69 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "Settings/Settings.h"
+#include "WeaponModularManager.generated.h"
+
+class UInventoryItemSlotWidget;
+class UMainLayout;
+struct FWeaponData;
+class AInventorySceneRenderer;
+
+UCLASS()
+class WEAPONMODULARPLUGIN_API AWeaponModularManager : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
+	AWeaponModularManager();
+
+	//Getters
+	UFUNCTION()
+	FUISettings GetUISettings() { return UISettings; }
+
+protected:
+	//====================================================================
+	// PROPERTIES AND VARIABLES
+	//====================================================================
+	//
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<UMainLayout> MainHUDContainer;
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UDataTable> WeaponTable;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AInventorySceneRenderer> InventorySceneRendererClass;
+	
+	// Data
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<TObjectPtr<AInventorySceneRenderer>> InventorySceneRendererList;
+	
+	//
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
+	FRotationSettings RotationSettings;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
+	FCameraSettings CameraSettings;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
+	FUISettings UISettings;
+	
+	//
+	int IndexSpawn = 0;
+
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
+
+	virtual void BeginPlay() override;
+
+	UFUNCTION(BlueprintCallable)
+	void ProcessWeaponTable();
+	
+	void SpawnInventorySceneRenderers(FWeaponData* WData);
+
+};
