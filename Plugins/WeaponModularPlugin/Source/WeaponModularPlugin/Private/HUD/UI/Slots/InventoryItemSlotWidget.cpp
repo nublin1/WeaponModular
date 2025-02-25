@@ -3,6 +3,7 @@
 
 #include "HUD/UI/Slots/InventoryItemSlotWidget.h"
 
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
 #include "Components/CanvasPanelSlot.h"
@@ -15,6 +16,7 @@
 #include "Utilities/UtilitiesRender.h"
 #include "Rendering/DrawElements.h"
 #include "AInventorySceneRenderer.h"
+#include "Slate/SlateBrushAsset.h"
 
 void UInventoryItemSlotWidget::NativeConstruct()
 {
@@ -91,6 +93,8 @@ void UInventoryItemSlotWidget::ComparisonAndUpdateItemPartWidget(UItemPartWidget
 	if (!Result)
 		return;
 
+	
+	Widget->SetWeaponPartListWidgetClass(UISettings.WeaponPartListWidgetClass);
 	Widget->SetIconMaterial(UISettings.IconMaterial);
 	Widget->SetTargetMarkerLinked(AttachmentPoint);
 	Widget->UpdateVisual();
@@ -104,7 +108,7 @@ void UInventoryItemSlotWidget::AddItemPartWidget(USC_WeaponPartAttachmentPoint* 
 	if (!LinkedSceneRenderer)
 		return;
 	auto PosInScreen = CalculateCoordinates(LinkedSceneRenderer->CaptureComponent, AttachmentPoint->GetComponentLocation());
-	auto Index = FindIndexOfClosestAvaiableWidgetPosition(PosInScreen);
+	auto Index = FindIndexOfClosestAvailableWidgetPosition(PosInScreen);
 	if (Index < 0)
 		return;
 
@@ -223,8 +227,8 @@ void UInventoryItemSlotWidget::SetRenderTargetMaterial(UTextureRenderTarget2D* R
 	}
 	
 	DynamicMaterial->SetTextureParameterValue(FName("RenderTarget"), RenderTarget);
-	RT_Image->SetBrushFromMaterial(DynamicMaterial);
-	if(auto RT_ImagePanelSlot =  Cast<UCanvasPanelSlot>(RT_Image->Slot))
+	RT_Image.Get()->SetBrushFromMaterial(DynamicMaterial);
+	if(const auto RT_ImagePanelSlot =  Cast<UCanvasPanelSlot>(RT_Image->Slot))
 	{
 		RT_ImagePanelSlot->SetSize(FVector2D(RenderTarget->SizeX, RenderTarget->SizeY));
 	}
@@ -309,7 +313,7 @@ UItemPartWidget* UInventoryItemSlotWidget::CreateItemPartWidget()
 	return CreateWidget<UItemPartWidget>(GetWorld(), UISettings.ItemPartWidgetClass);
 }
 
-int32 UInventoryItemSlotWidget::FindIndexOfClosestAvaiableWidgetPosition(FVector2D ComparedPosition)
+int32 UInventoryItemSlotWidget::FindIndexOfClosestAvailableWidgetPosition(FVector2D ComparedPosition)
 {
 	int32 Index = -1;
 	float ClosestDistance = FLT_MAX;
@@ -574,7 +578,7 @@ FReply UInventoryItemSlotWidget::NativeOnMouseWheel(const FGeometry& InGeometry,
 	auto EventPath = InMouseEvent.GetEventPath();
 	bool bIsCursorOverCurrentWidget = false;
 	
-	for (auto CurrentWidget : EventPath->Widgets.GetInternalArray())
+	for (FArrangedWidget CurrentWidget : EventPath->Widgets.GetInternalArray())
 	{
 		if (CurrentWidget.Widget == this->MyWidget)
 		{
@@ -606,23 +610,20 @@ int32 UInventoryItemSlotWidget::NativePaint(const FPaintArgs& Args, const FGeome
 
 	for (auto& PartWidget : PartWidgets)
 	{
+		if (!PartWidget->GetTargetMarkerLinked())
+			continue;
+		
 		if (PartWidget->GetBrushTargetPoint() != FVector2D(-1, -1))
 		{
 			if (PartWidget->GetBrushTexture())
 			{
 				FVector2D Size = PartWidget->GetBrushTargetSize();
 				FVector2D Position = PartWidget->GetBrushTargetPoint() - Size * 0.5f; // Центрируем позицию
-
-				// Получаем кисть
+				
 				const FSlateBrush& Brush = PartWidget->GetBrushTexture()->Brush;
-
-				// Создаем Layout Transform
 				FSlateLayoutTransform LayoutTransform(1.0f, Position);
-
-				// Создаем Paint Geometry
 				FPaintGeometry PaintGeometry = AllottedGeometry.ToPaintGeometry(Size, LayoutTransform);
-
-				// Рисуем прямоугольник
+				
 				FSlateDrawElement::MakeBox(
 					OutDrawElements,
 					LayerId,
@@ -631,8 +632,7 @@ int32 UInventoryItemSlotWidget::NativePaint(const FPaintArgs& Args, const FGeome
 					ESlateDrawEffect::None,
 					InWidgetStyle.GetColorAndOpacityTint()
 				);
-
-				// Увеличиваем LayerId для следующего элемента
+				
 				LayerId++;
 			}
 		}

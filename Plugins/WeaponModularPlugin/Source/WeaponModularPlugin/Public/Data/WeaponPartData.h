@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,7 +9,7 @@ UENUM(Blueprintable)
 enum class EWeaponPartType : uint8
 {
 	None				UMETA(DisplayName = "None"),
-	BarrelAttachment	UMETA(DisplayName = "BarrelAttachment"),
+	BarrelAttachment	UMETA(DisplayName = "Barrel Attachment"),
 	Scope				UMETA(DisplayName = "Scope"),
 	Barrel				UMETA(DisplayName = "Barrel"),
 	Gunstock			UMETA(DisplayName = "Gunstock"),
@@ -23,7 +21,7 @@ struct FWeaponPartTypeProperties
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon Part")
 	EWeaponPartType WeaponPartType = EWeaponPartType::None;
 };
 
@@ -32,10 +30,10 @@ struct FWeaponPartAssets
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon Part|Assets")
 	TObjectPtr<UStaticMesh> StaticMesh = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon Part|Assets")
 	TObjectPtr<UTexture2D> Texture = nullptr;
 };
 
@@ -44,25 +42,24 @@ struct FWeaponPart
 {
 	GENERATED_USTRUCT_BODY()
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon Part")
 	FWeaponPartTypeProperties TypeProperties;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon Part")
 	FWeaponPartAssets VisualProperties;
 };
 
-USTRUCT()
-struct WEAPONMODULARPLUGIN_API  FWeaponPartData : public FTableRowBase
+USTRUCT(BlueprintType)
+struct WEAPONMODULARPLUGIN_API FWeaponPartData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon Part Data")
 	FName Name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon Part Data")
 	FWeaponPart BaseWeaponPartData;
 };
-
 
 UCLASS()
 class WEAPONMODULARPLUGIN_API UWeaponPartDataUtilities : public UObject
@@ -70,15 +67,14 @@ class WEAPONMODULARPLUGIN_API UWeaponPartDataUtilities : public UObject
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Weapon Part Utilities")
 	static TArray<FWeaponPartData> GetSpecificWeaponParts(UDataTable* DataTable, EWeaponPartType PartType);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Weapon Part Utilities")
 	static bool AreWeaponPartPropertiesEqual(FWeaponPartTypeProperties WeaponPartTypeProperties, FWeaponPartTypeProperties RowName2);
 };
 
-inline TArray<FWeaponPartData> UWeaponPartDataUtilities::GetSpecificWeaponParts(UDataTable* DataTable,
-	EWeaponPartType PartType)
+inline TArray<FWeaponPartData> UWeaponPartDataUtilities::GetSpecificWeaponParts(UDataTable* DataTable, EWeaponPartType PartType)
 {
 	TArray<FWeaponPartData> MatchingParts;
 
@@ -106,9 +102,5 @@ inline TArray<FWeaponPartData> UWeaponPartDataUtilities::GetSpecificWeaponParts(
 
 inline bool UWeaponPartDataUtilities::AreWeaponPartPropertiesEqual(FWeaponPartTypeProperties WeaponPartTypeProperties, FWeaponPartTypeProperties RowName2)
 {
-	if (WeaponPartTypeProperties.WeaponPartType != RowName2.WeaponPartType)
-	{
-		return false;
-	}	
-	return true;
+	return WeaponPartTypeProperties.WeaponPartType == RowName2.WeaponPartType;
 }

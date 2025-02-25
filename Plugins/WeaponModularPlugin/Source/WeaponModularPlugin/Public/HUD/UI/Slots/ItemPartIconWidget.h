@@ -10,14 +10,10 @@ class UButton;
 class UTextBlock;
 class UImage;
 
-
 #pragma region Delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnClickedContent_Button, UItemPartIconWidget*, ItemPartIconWidget);
 #pragma endregion
 
-/**
- * 
- */
 UCLASS()
 class WEAPONMODULARPLUGIN_API UItemPartIconWidget : public UBUIUserWidget
 {
@@ -27,39 +23,53 @@ public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
+
+	/** Delegate for button click event */
+	UPROPERTY(BlueprintAssignable, Category = "Item Part Icon|Delegates")
 	FOnClickedContent_Button OnClickedContent_Button;
-	
+
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+
 	UItemPartIconWidget();
 
 	virtual void NativeOnInitialized() override;
-	
-	UFUNCTION()
-	UButton* GetContent_Button() {return Content_Button;}
-	UFUNCTION()
-	UImage* GetContent_Image() {return Content_Image;}
-	UFUNCTION()
-	UTextBlock* GetContent_Text_Name() {return Content_Text_Name;}
+
+	/** Returns the button used for content interaction */
+	UFUNCTION(BlueprintCallable, Category = "Item Part Icon|Accessors")
+	UButton* GetContent_Button() { return Content_Button; }
+
+	/** Returns the image used for content display */
+	UFUNCTION(BlueprintCallable, Category = "Item Part Icon|Accessors")
+	UImage* GetContent_Image() { return Content_Image; }
+
+	/** Returns the text block used for displaying the item name */
+	UFUNCTION(BlueprintCallable, Category = "Item Part Icon|Accessors")
+	UTextBlock* GetContent_Text_Name() { return Content_Text_Name; }
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	// Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BindWidget))
+
+	/** Button used for content interaction */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Part Icon|Widgets", meta = (BindWidget))
 	TObjectPtr<UButton> Content_Button;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BindWidget))
+
+	/** Image used for content display */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Part Icon|Widgets", meta = (BindWidget))
 	TObjectPtr<UImage> Content_Image;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BindWidget))
+
+	/** Text block used for displaying the item name */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Part Icon|Widgets", meta = (BindWidget))
 	TObjectPtr<UTextBlock> Content_Text_Name;
 
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
-	UFUNCTION()
-	void Content_ButtonClick();
 
-	
+	/** Handles the button click event */
+	UFUNCTION(Category = "Item Part Icon|Event Handlers")
+	void Content_ButtonClick();
 };

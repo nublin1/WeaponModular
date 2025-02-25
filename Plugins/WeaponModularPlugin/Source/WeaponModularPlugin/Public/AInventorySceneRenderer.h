@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Settings/Settings.h"
+#include "Components/SceneCaptureComponent2D.h"
 #include "AInventorySceneRenderer.generated.h"
-
 
 UCLASS(Blueprintable)
 class WEAPONMODULARPLUGIN_API AInventorySceneRenderer : public AActor
@@ -17,9 +17,10 @@ public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Scene Renderer")
 	TObjectPtr<USceneCaptureComponent2D> CaptureComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Scene Renderer")
 	TObjectPtr<UChildActorComponent> ChildComponent;
 	
 	//====================================================================
@@ -28,14 +29,15 @@ public:
 	AInventorySceneRenderer();
 	virtual void OnConstruction(const FTransform& Transform) override;
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Scene Renderer")
 	void Initialize();
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category="Scene Renderer")
 	void UpdateVisibleComponents();
 
 	// Setters
-	void SetRotationSettings(const FRotationSettings NewSettings) {RotationSettings = NewSettings;}
-	void SetCameraSettings(const FCameraSettings& NewSettings) {CameraSettings = NewSettings;}
+	void SetRotationSettings(const FRotationSettings NewSettings) { RotationSettings = NewSettings; }
+	void SetCameraSettings(const FCameraSettings& NewSettings) { CameraSettings = NewSettings; }
 	
 protected:
 	//====================================================================
@@ -43,24 +45,25 @@ protected:
 	//====================================================================
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Scene Renderer|Transform")
 	virtual void RotateObject(FVector2D Delta);
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category="Scene Renderer|Transform")
 	virtual void ZoomObject(float Delta);
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category="Scene Renderer|Transform")
 	void CenterChildComponent();
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Scene Renderer|Settings")
 	FRotationSettings RotationSettings;
-	UPROPERTY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Scene Renderer|Settings")
 	FCameraSettings CameraSettings;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Scene Renderer|Transform")
 	FVector Relative;
-	
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
 };

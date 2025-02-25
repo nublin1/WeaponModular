@@ -2,9 +2,10 @@
 
 
 #include "AInventorySceneRenderer.h"
-
+#include "Engine/World.h"
 #include "Components/SceneCaptureComponent2D.h"
-
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 AInventorySceneRenderer::AInventorySceneRenderer()
 {
@@ -15,7 +16,7 @@ AInventorySceneRenderer::AInventorySceneRenderer()
 	CaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCaptureComponent"));
 	if (CaptureComponent)
 	{
-		CaptureComponent->SetupAttachment(RootComponent); 
+		CaptureComponent.Get()->SetupAttachment(RootComponent); 
 	}
 	
 	ChildComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ChildComponent"));
@@ -39,16 +40,16 @@ void AInventorySceneRenderer::BeginPlay()
 
 void AInventorySceneRenderer::Initialize()
 {
-	CaptureComponent->AddRelativeLocation(CameraSettings.InitialRelativeLocation);
+	CaptureComponent.Get()->AddRelativeLocation(CameraSettings.InitialRelativeLocation);
 	if (CameraSettings.bReverseWeapon)
 	{
 		auto Rotation = ChildComponent->GetComponentRotation();
 		ChildComponent->SetRelativeRotation(FRotator(Rotation.Yaw, Rotation.Pitch+180.0f, Rotation.Roll));
 	}
 	
-	CaptureComponent->ProjectionType = CameraSettings.CameraProjectionMode;
-	CaptureComponent->OrthoWidth = CameraSettings.OrthoWidth;
-	CaptureComponent->FOVAngle = CameraSettings.FOVAngle;
+	CaptureComponent.Get()->ProjectionType = CameraSettings.CameraProjectionMode;
+	CaptureComponent.Get()->OrthoWidth = CameraSettings.OrthoWidth;
+	CaptureComponent.Get()->FOVAngle = CameraSettings.FOVAngle;
 }
 
 void AInventorySceneRenderer::UpdateVisibleComponents()
@@ -60,9 +61,9 @@ void AInventorySceneRenderer::UpdateVisibleComponents()
 	if (!ChildActor)
 		return;
 
-	CaptureComponent->PrimitiveRenderMode = ESceneCapturePrimitiveRenderMode::PRM_UseShowOnlyList;
-	CaptureComponent->ShowOnlyActors.Reset();
-	CaptureComponent->ShowOnlyActors.Add(ChildActor);
+	CaptureComponent.Get()->PrimitiveRenderMode = ESceneCapturePrimitiveRenderMode::PRM_UseShowOnlyList;
+	CaptureComponent.Get()->ShowOnlyActors.Reset();
+	CaptureComponent.Get()->ShowOnlyActors.Add(ChildActor);
 	//CaptureComponent->ShowOnlyActorComponents(ChildActor, true);
 }
 
@@ -102,28 +103,28 @@ void AInventorySceneRenderer::ZoomObject(float Delta)
 	if (!CaptureComponent)
 		return;
 
-	if (CaptureComponent->ProjectionType.GetValue() == ECameraProjectionMode::Type::Orthographic)
+	if (CaptureComponent.Get()->ProjectionType.GetValue() == ECameraProjectionMode::Type::Orthographic)
 	{
 		float MinOrthoWidth = 50.0f;
 		float MaxOrthoWidth = 1000.0f;
 		
 		float NewOrthoWidth = CaptureComponent->OrthoWidth - Delta * CameraSettings.CameraOffsetSpeed;
 		NewOrthoWidth = FMath::Clamp(NewOrthoWidth, MinOrthoWidth, MaxOrthoWidth);
-		CaptureComponent->OrthoWidth = NewOrthoWidth;
+		CaptureComponent.Get()->OrthoWidth = NewOrthoWidth;
 	}
 	else
 	{
 		float DeltaTime = GetWorld()->GetDeltaSeconds();
-		auto CurrentLocation = CaptureComponent->GetComponentLocation();
-		FVector NewLocation = CurrentLocation + CaptureComponent->GetForwardVector() * Delta * CameraSettings.CameraOffsetSpeed * DeltaTime;
+		auto CurrentLocation = CaptureComponent.Get()->GetComponentLocation();
+		FVector NewLocation = CurrentLocation + CaptureComponent.Get()->GetForwardVector() * Delta * CameraSettings.CameraOffsetSpeed * DeltaTime;
 
-		FVector StartLocation = CaptureComponent->GetComponentLocation();
+		FVector StartLocation = CaptureComponent.Get()->GetComponentLocation();
 		FVector OffsetVector = NewLocation - StartLocation;
 		float Distance = OffsetVector.Size();
 		float ClampedDistance = FMath::Clamp(Distance, FMath::Abs(CameraSettings.MinOffsetDistance), FMath::Abs(CameraSettings.MaxOffsetDistance));
 		FVector ClampedOffsetVector = OffsetVector.GetSafeNormal() * ClampedDistance;
 	
-		CaptureComponent->SetWorldLocation(NewLocation);
+		CaptureComponent.Get()->SetWorldLocation(NewLocation);
 	}
 }
 

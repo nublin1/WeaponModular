@@ -8,11 +8,12 @@
 
 class UCanvasPanel;
 class UInventoryItemSlotWidget;
+
 /**
  * 
  */
 UCLASS()
-class WEAPONMODULARPLUGIN_API  UWeaponLayout : public UBUIUserWidget
+class WEAPONMODULARPLUGIN_API UWeaponLayout : public UBUIUserWidget
 {
 	GENERATED_BODY()
 
@@ -20,23 +21,27 @@ public:
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
-	void AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInventoryItemSlotsWidget );
+	UFUNCTION(BlueprintCallable, Category="Weapon Layout")
+	void AddInventoryItemSlotsWidget(UInventoryItemSlotWidget* NewInventoryItemSlotsWidget);
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI", meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> MainCanvasPanel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="UI", meta=(BindWidget))
 	TObjectPtr<UCanvasPanel> ContentPanel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory")
 	TArray<TObjectPtr<UInventoryItemSlotWidget>> UInventoryItemSlotsWidgets;
 
 	// Data
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Inventory")
 	int CurrentChildIndexVisible = 0;
 
+	// 
 	TMap<UInventoryItemSlotWidget*, FTimerHandle> ActiveTimers;
 
 	//====================================================================
@@ -44,8 +49,9 @@ protected:
 	//====================================================================
 	virtual void NativeConstruct() override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category="Navigation")
 	void OnNextButtonClicked();
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category="Navigation")
 	void OnPreviousButtonClicked();
 };

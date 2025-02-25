@@ -8,10 +8,7 @@
 
 #pragma region Delegates
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGeometryReady, UBUIUserWidget*, BUIUserWidget);
-
-
 #pragma endregion
-
 
 UCLASS()
 class WEAPONMODULARPLUGIN_API  UBUIUserWidget : public UUserWidget
@@ -19,15 +16,23 @@ class WEAPONMODULARPLUGIN_API  UBUIUserWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintAssignable)
+	//====================================================================
+	// PROPERTIES AND VARIABLES
+	//====================================================================
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnGeometryReady OnGeometryReady;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
 	bool bIsGeometryReady = false;
 
 protected:
-	UFUNCTION()
+	//====================================================================
+	// FUNCTIONS
+	//====================================================================
+
+	UFUNCTION(Category = "Actions")
 	virtual void GeometryReady();
-	
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;	
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 };

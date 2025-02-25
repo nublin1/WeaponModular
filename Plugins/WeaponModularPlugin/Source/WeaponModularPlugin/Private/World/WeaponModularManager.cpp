@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
 #include "World/WeaponModularManager.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Data/WeaponData.h"
@@ -111,7 +112,7 @@ void AWeaponModularManager::SpawnInventorySceneRenderers(FWeaponData* WData)
 		return;
 	
 	MainHUDContainer->WeaponLayout->AddInventoryItemSlotsWidget(InventoryItemSlotWidget);
-	InventoryItemSlotWidget->SetUISettins(UISettings);
+	InventoryItemSlotWidget->SetUISettings(UISettings);
 	InventoryItemSlotWidget->SetRenderTargetMaterial(RenderTarget);
 	InventoryItemSlotWidget->SetRotationSettings(RotationSettings);
 	

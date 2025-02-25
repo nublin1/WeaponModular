@@ -5,20 +5,19 @@
 #include "Engine/StaticMesh.h"
 #include "WeaponData.generated.h"
 
-
 class AWeapon;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct WEAPONMODULARPLUGIN_API FWeaponData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon")
 	FName Name;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon")
 	TSubclassOf<AWeapon> Weapon;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ToolTip = "Optional: Leave empty if not needed"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Weapon", meta = (ToolTip = "Optional: Leave empty if not needed"))
 	TSubclassOf<UInventoryItemSlotWidget> LinkedInventoryItemSlotWidgetClass; 
 };

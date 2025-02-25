@@ -7,7 +7,6 @@
 #include "Data/WeaponPartData.h"
 #include "WeaponPartListWidget.h"
 #include "Helpers/SC_WeaponPartAttachmentPoint.h"
-#include "Slate/SlateBrushAsset.h"
 #include "HUD/UI/BUIUserWidget.h"
 #include "ItemPartWidget.generated.h"
 
@@ -34,75 +33,106 @@ public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	
-	UPROPERTY(BlueprintAssignable)
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnListButtonClick OnListButtonClick;
-	
+
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
 	UItemPartWidget();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Update")
 	void UpdateVisual();
 
-	UFUNCTION()
+	UFUNCTION(Category = "Widgets")
 	UWeaponPartListWidget* CreateWeaponPartListWidget();
 
 	// Getters
-	UDataTable* GetWidgetTable() {return WidgetTable;}
-	UItemPartIconWidget* GetMainItemIconWidget() {return MainItemIconWidget; }
-	UWeaponPartListWidget* GetPartListWidget() {return LinkedWeaponPartListWidget;}
-	USC_WeaponPartAttachmentPoint* GetTargetMarkerLinked() {return TargetMarkerLinked;}
-	FVector2D GetBrushTargetPoint() const {return BrushTargetPoint; }
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	UDataTable* GetWidgetTable() { return WidgetTable; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	UItemPartIconWidget* GetMainItemIconWidget() { return MainItemIconWidget; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	UWeaponPartListWidget* GetPartListWidget() { return LinkedWeaponPartListWidget; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	USC_WeaponPartAttachmentPoint* GetTargetMarkerLinked() { return TargetMarkerLinked; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	FVector2D GetBrushTargetPoint() const { return BrushTargetPoint; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
 	USlateBrushAsset* GetBrushTexture() { return TargetMarkerLinked->GetBrushTexture(); }
-	FWeaponPartTypeProperties GetWidgetWeaponPartType() {return WidgetWeaponPartType;}
-	FVector2D& GetBrushTargetSize()	{return BrushTargetSize;}
-	TSubclassOf<UWeaponPartListWidget>& GetWeaponPartListWidgetClass(){	return WeaponPartListWidgetClass;}
-	
-	
-	//Setters
-	void SetWidgetTable(UDataTable* NewDataTable) { WidgetTable = NewDataTable;	}
-	void SetTargetMarkerLinked(USC_WeaponPartAttachmentPoint* NewWeaponPartAttachmentPoint) {TargetMarkerLinked =NewWeaponPartAttachmentPoint; }
-	void SetWidgetWeaponPartType(FWeaponPartTypeProperties NewWeaponPartTypeProperties) {WidgetWeaponPartType = NewWeaponPartTypeProperties;}
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	FWeaponPartTypeProperties GetWidgetWeaponPartType() { return WidgetWeaponPartType; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	FVector2D& GetBrushTargetSize() { return BrushTargetSize; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	TSubclassOf<UWeaponPartListWidget>& GetWeaponPartListWidgetClass() { return WeaponPartListWidgetClass; }
+
+	// Setters
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	void SetWidgetTable(UDataTable* NewDataTable) { WidgetTable = NewDataTable; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	void SetTargetMarkerLinked(USC_WeaponPartAttachmentPoint* NewWeaponPartAttachmentPoint) { TargetMarkerLinked = NewWeaponPartAttachmentPoint; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	void SetWidgetWeaponPartType(FWeaponPartTypeProperties NewWeaponPartTypeProperties) { WidgetWeaponPartType = NewWeaponPartTypeProperties; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
 	void SetBrushTargetPoint(FVector2D NewBrushTargetPoint) { BrushTargetPoint = NewBrushTargetPoint; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
 	void SetIconMaterial(UMaterialInterface* NewMaterial) { IconMaterial = NewMaterial; }
-	void SetBrushTargetSize(const FVector2D& _BrushTargetSize){this->BrushTargetSize = _BrushTargetSize;	}
-	void SetWeaponPartListWidgetClass(const TSubclassOf<UWeaponPartListWidget>& _WeaponPartListWidgetClass) {this->WeaponPartListWidgetClass = _WeaponPartListWidgetClass;	}
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	void SetBrushTargetSize(const FVector2D& _BrushTargetSize) { this->BrushTargetSize = _BrushTargetSize; }
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	void SetWeaponPartListWidgetClass(const TSubclassOf<UWeaponPartListWidget>& _WeaponPartListWidgetClass) { this->WeaponPartListWidgetClass = _WeaponPartListWidgetClass; }
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
 	// Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget), Category = "Widgets")
 	TObjectPtr<UItemPartIconWidget> MainItemIconWidget;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,meta=(BindWidget))
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget), Category = "Widgets")
 	TObjectPtr<UButton> ListButton;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
 	TSubclassOf<UWeaponPartListWidget> WeaponPartListWidgetClass;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widgets")
 	TObjectPtr<UWeaponPartListWidget> LinkedWeaponPartListWidget;
 
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widgets")
 	TObjectPtr<USC_WeaponPartAttachmentPoint> TargetMarkerLinked;
 
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TObjectPtr<UDataTable> WidgetTable;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FWeaponPartTypeProperties WidgetWeaponPartType;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FVector2D BrushTargetPoint;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FVector2D BrushTargetSize = FVector2D(16.0f, 16.0f);
-	
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	// Materials
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Materials")
 	TObjectPtr<UMaterialInterface> IconMaterial;
 
 	//====================================================================
@@ -110,13 +140,13 @@ protected:
 	//====================================================================
 	virtual void NativeOnInitialized() override;
 
-	
-	UFUNCTION()
+	UFUNCTION(Category = "Actions")
 	void ListButtonClick();
-	UFUNCTION()
+
+	UFUNCTION(Category = "Actions")
 	void PartClicked(UItemPartIconWidget* ItemPartIconWidget);
-	
-	
+
 	virtual void NativeOnMouseEnter(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 };

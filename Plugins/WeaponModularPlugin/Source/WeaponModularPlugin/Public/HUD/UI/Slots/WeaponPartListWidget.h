@@ -25,45 +25,62 @@ public:
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+	
+	/** Constructor for UWeaponPartListWidget */
 	UWeaponPartListWidget();
 
-	UFUNCTION()
+	/** Initializes the widget */
+	UFUNCTION(BlueprintCallable, Category = "Weapon Part List|Initialization")
 	void Initialized();
 	
-	UFUNCTION()
+	/** Clears the part list */
+	UFUNCTION(BlueprintCallable, Category = "Weapon Part List|Management")
 	void ClearPartList() const;
-	UFUNCTION()
+
+	/** Adds an empty part to the list */
+	UFUNCTION(BlueprintCallable, Category = "Weapon Part List|Management")
 	void AddEmptyPartToList();
-	UFUNCTION()
+
+	/** Adds a list of weapon parts to the list */
+	UFUNCTION(BlueprintCallable, Category = "Weapon Part List|Management")
 	void AddPartsToList(TArray<FWeaponPartData> ListOfParts);
 
-	//Getters
+	//====================================================================
+	// GETTERS
+	//====================================================================
+
+	/** Returns the scroll box for the weapon part list */
+	UFUNCTION(BlueprintCallable, Category = "Weapon Part List|Accessors")
 	UScrollBox* GetWeaponPartList_ScrollBox() {return WeaponPartList_ScrollBox;}
+
+	/** Returns the vertical box for the weapon part list */
+	UFUNCTION(BlueprintCallable, Category = "Weapon Part List|Accessors")
 	UVerticalBox* GetWeaponPartListBox() {return WeaponPartList_VerticalBox;}
+
+	/** Returns a map of item part icons to weapon part data */
 	TMap<TObjectPtr<UItemPartIconWidget>, FWeaponPartData> GetItemPartIconToWeaponPartMap() {return ItemPartIconToWeaponPartMap;}
 
-
-	
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	// Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UScrollBox> WeaponPartList_ScrollBox;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(BindWidget))
-	TObjectPtr<UVerticalBox> WeaponPartList_VerticalBox;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon Part List|Widgets", meta = (BindWidget))
+	TObjectPtr<UScrollBox> WeaponPartList_ScrollBox;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon Part List|Widgets", meta = (BindWidget))
+	TObjectPtr<UVerticalBox> WeaponPartList_VerticalBox;
 
-	// Data
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Weapon Part List|Data")
 	TMap<TObjectPtr<UItemPartIconWidget>, FWeaponPartData> ItemPartIconToWeaponPartMap;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Part List|References")
 	TObjectPtr<AWeaponModularManager> WeaponModularManager;
 
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
-	
-	
+
+	/** Handles mouse leave event */
 	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 };

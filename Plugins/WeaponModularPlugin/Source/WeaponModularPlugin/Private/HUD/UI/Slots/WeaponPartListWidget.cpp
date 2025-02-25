@@ -3,8 +3,7 @@
 
 #include "HUD/UI/Slots/WeaponPartListWidget.h"
 
-#include "PC_ModularWeapon.h"
-#include "Components/Button.h"
+
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Data/WeaponPartData.h"

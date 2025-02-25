@@ -17,7 +17,7 @@ class WEAPONMODULARPLUGIN_API AWeapon : public AActor
 public:		
 	AWeapon();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void InitAttachPoints();
 
 protected:
@@ -26,7 +26,7 @@ protected:
 	//====================================================================
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<TObjectPtr<USC_WeaponPartAttachmentPoint>> WeaponMarkers;
 
 	//====================================================================

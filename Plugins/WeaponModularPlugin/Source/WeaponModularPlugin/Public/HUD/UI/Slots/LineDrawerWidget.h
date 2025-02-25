@@ -31,23 +31,23 @@ public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	
 
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
 	ULineDrawerWidget();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Line Drawing")
 	void ClearLinesToDraw();
-	UFUNCTION(BlueprintCallable)
+	
+	UFUNCTION(BlueprintCallable, Category = "Line Drawing")
 	bool AddLineToDraw(FString LineName, FVector2D StartPoint, FVector2D EndPoint, FLinearColor ColorLine = FLinearColor::Yellow, float Thickness = 1.0f);
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category = "Line")
 	TMap<FString, FLineDrawInfo> LineDrawers;
 
 	//====================================================================

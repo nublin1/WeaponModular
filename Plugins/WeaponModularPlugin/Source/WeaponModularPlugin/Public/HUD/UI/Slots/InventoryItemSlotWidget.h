@@ -49,103 +49,126 @@ public:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================	
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnMouseMoveDelta OnMouseMoveDelta;
-	UPROPERTY(BlueprintAssignable)
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnMouseWheelDelta OnMouseWheelDelta;
-	UPROPERTY(BlueprintAssignable)
+
+	UPROPERTY(BlueprintAssignable, Category = "Delegates")
 	FOnItemPartWidgetAdded OnItemPartWidgetAdded;
 
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Initialization")
 	void InitializeWidgetPositions();
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category = "Update")
 	void RecalculateLinesToDraw();
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category = "Update")
 	void ComparisonAndUpdateItemPartWidget(UItemPartWidget* Widget, USC_WeaponPartAttachmentPoint* AttachmentPoint);
-	UFUNCTION(BlueprintCallable)
-	void AddItemPartWidget (USC_WeaponPartAttachmentPoint* AttachmentPoint);
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category = "Widgets")
+	void AddItemPartWidget(USC_WeaponPartAttachmentPoint* AttachmentPoint);
+
+	UFUNCTION(BlueprintCallable, Category = "Positioning")
 	void CalculateItemSlotPositions(FVector2D size = FVector2D::ZeroVector);
 
 	// Getters
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Positioning")
 	TArray<FVector2D> GetItemsWidgetPositions();
 	
 	// Setters
 	void SetRenderTargetMaterial(UTextureRenderTarget2D* RenderTarget);
-	void SetUISettins(FUISettings NewUISettings) {UISettings = NewUISettings;}
-	void SetRotationSettings(FRotationSettings NewSettings) {RotationSettings = NewSettings;}
+	void SetUISettings(FUISettings NewUISettings) { UISettings = NewUISettings; }
+	void SetRotationSettings(FRotationSettings NewSettings) { RotationSettings = NewSettings; }
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
 	// Widgets
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional), Category = "Widgets")
 	TObjectPtr<UCanvasPanel> MainCanvas;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget), Category = "Widgets")
 	TObjectPtr<UCanvasPanel> ContentPanel;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidget), Category = "Widgets")
 	TObjectPtr<UImage> RT_Image;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(BindWidgetOptional), Category = "Widgets")
 	TObjectPtr<ULineDrawerWidget> WBP_LineDrawer;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Slots")
 	TArray<TObjectPtr<UItemPartWidget>> PartWidgets;
 	
-
 	// Data
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category = "Data")
 	TObjectPtr<AInventorySceneRenderer> LinkedSceneRenderer;
-	UPROPERTY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Data")
 	bool bIsDragging = false;
-	UPROPERTY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Transient, Category = "Data")
 	FVector2D LastMousePosition;
-	UPROPERTY(BlueprintReadWrite)
+
+	UPROPERTY(BlueprintReadWrite, Category = "Data")
 	TArray<FVector2D> BoxesToDraw;
 
 	// UI Settings
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Category = "UI Settings")
 	FUISettings UISettings;
-	UPROPERTY()
+
+	UPROPERTY(Transient)
 	TArray<FItemsWidgetSlot> ItemWidgetsArray;
 
 	// Rotation
-	FVector2D RotationAngle = FVector2D::ZeroVector;	
-	FRotationSettings RotationSettings;	
+	UPROPERTY(Transient)
+	FVector2D RotationAngle = FVector2D::ZeroVector;
+
+	UPROPERTY(Transient)
+	FRotationSettings RotationSettings;
 
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
 	virtual void NativeConstruct() override;
 
-	
-	UFUNCTION()
+	UFUNCTION(Category = "Positioning")
 	FVector2D CalculateOvalPosition(int32 Index, const FVector2D& Center, float OvalWidth, float OvalHeight);
-	UFUNCTION()
-	FVector2D CalculateSquarePosition(int32 Index,const FVector2D& Center, float SquareWidth, float SquareHeight);
-	UFUNCTION()
+
+	UFUNCTION(Category = "Positioning")
+	FVector2D CalculateSquarePosition(int32 Index, const FVector2D& Center, float SquareWidth, float SquareHeight);
+
+	UFUNCTION(Category = "Positioning")
 	FVector2D CalculateCirclePosition(int32 Index, const FVector2D& Center, float Radius, const FVector2D& ScreenSize) const;
-	UFUNCTION()
+
+	UFUNCTION(Category = "Widgets")
 	UItemPartWidget* CreateItemPartWidget();
-	UFUNCTION()
-	int32 FindIndexOfClosestAvaiableWidgetPosition(FVector2D ComparedPosition);
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(Category = "Widgets")
+	int32 FindIndexOfClosestAvailableWidgetPosition(FVector2D ComparedPosition);
+
+	UFUNCTION(BlueprintCallable, Category = "Positioning")
 	FVector2D CalculateCoordinates(USceneCaptureComponent2D* SceneCaptureComponent, FVector WorldPosition);
-	UFUNCTION(BlueprintCallable)
+
+	UFUNCTION(BlueprintCallable, Category = "Drawing")
 	void CalculateLineToDraw(UItemPartWidget* ItemPartWidget);
+
+	UFUNCTION(Category = "Widgets")
 	UWeaponPartListWidget* CreateAndPositionListWidget(UItemPartWidget* FromWidget);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Widgets")
 	void ListButtonClick(UItemPartWidget* FromWidget);
-	UFUNCTION()
+
+	UFUNCTION(Category = "Widgets")
 	void UpdateWidgetsPositions();
-	UFUNCTION()
+
+	UFUNCTION(Category = "Positioning")
 	FVector2D Calculate3DRotationPosition(FVector2D Radius, FVector2D AngleOffset, float& OutDepth, FVector2D& BasePosition);
-	
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;	
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 	virtual FReply NativeOnMouseMove(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
@@ -154,4 +177,3 @@ protected:
 	virtual int32 NativePaint(const FPaintArgs& Args, const FGeometry& AllottedGeometry, const FSlateRect& MyCullingRect, FSlateWindowElementList& OutDrawElements, int32 LayerId, const FWidgetStyle& InWidgetStyle, bool bParentEnabled) const override;
 
 };
-	

@@ -21,30 +21,33 @@ public:
 	//====================================================================
 	// FUNCTIONS
 	//====================================================================
+
 	AWeaponModularManager();
 
-	//Getters
-	UFUNCTION()
+	// Getters
+	UFUNCTION(Category = "Settings")
 	FUISettings GetUISettings() { return UISettings; }
 
 protected:
 	//====================================================================
 	// PROPERTIES AND VARIABLES
 	//====================================================================
-	//
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+
+	// Main UI
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI")
 	TObjectPtr<UMainLayout> MainHUDContainer;
-	//
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	// Weapon and Inventory Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Data")
 	TObjectPtr<UDataTable> WeaponTable;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory")
 	TSubclassOf<AInventorySceneRenderer> InventorySceneRendererClass;
-	
+
 	// Data
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
 	TArray<TObjectPtr<AInventorySceneRenderer>> InventorySceneRendererList;
 	
-	//
+	// Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	FRotationSettings RotationSettings;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
@@ -52,7 +55,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Settings")
 	FUISettings UISettings;
 	
-	//
+	// Spawn Index
 	int IndexSpawn = 0;
 
 	//====================================================================
@@ -61,9 +64,8 @@ protected:
 
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Weapon Processing")
 	void ProcessWeaponTable();
 	
 	void SpawnInventorySceneRenderers(FWeaponData* WData);
-
 };
