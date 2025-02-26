@@ -2,7 +2,7 @@
 
 
 #include "World/Weapon.h"
-
+#include "Components/SkeletalMeshComponent.h"
 #include "Helpers/SC_WeaponPartAttachmentPoint.h"
 
 

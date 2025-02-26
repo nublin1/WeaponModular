@@ -5,6 +5,9 @@
 
 
 #include "Components/Image.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Slate/SlateBrushAsset.h"
+#include "Engine/Texture2D.h"
 #include "Components/TextBlock.h"
 #include "Data/WeaponPartData.h"
 #include "Components/VerticalBox.h"
@@ -67,7 +70,7 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 	{
 		if (TObjectPtr<UItemPartIconWidget> ItemPartIconWidget = CreateWidget<UItemPartIconWidget>(GetWorld(), WeaponModularManager->GetUISettings().ItemPartIconWidgetClass))
 		{
-			UTexture* Texture = ListOfParts[i].BaseWeaponPartData.VisualProperties.Texture;
+			TObjectPtr<UTexture2D> Texture = ListOfParts[i].BaseWeaponPartData.VisualProperties.Texture;
 			FVector2D TextureSize = FVector2D(256, 256);
 			if (Texture)
 			{
@@ -83,7 +86,7 @@ void UWeaponPartListWidget::AddPartsToList(TArray<FWeaponPartData> ListOfParts)
 			FSlateBrush Brush;
 			if (WeaponModularManager)
 			{
-				UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(WeaponModularManager->GetUISettings().IconMaterial, this);
+				TObjectPtr<UMaterialInstanceDynamic> DynamicMaterial = UMaterialInstanceDynamic::Create(WeaponModularManager->GetUISettings().IconMaterial, this);
 				DynamicMaterial->SetTextureParameterValue(FName("BaseTexture"), ListOfParts[i].BaseWeaponPartData.VisualProperties.Texture);
 				Brush.SetResourceObject(DynamicMaterial);
 			}

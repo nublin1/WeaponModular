@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "WeaponPartListWidget.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "HUD/UI/BUIUserWidget.h"
 #include "Settings/Settings.h"
 

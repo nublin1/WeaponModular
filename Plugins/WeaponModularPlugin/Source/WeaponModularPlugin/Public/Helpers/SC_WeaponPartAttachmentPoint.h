@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/Image.h"
 #include "Components/SceneComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Data/WeaponPartData.h"
 #include "Styling/SlateBrush.h"
 #include "SC_WeaponPartAttachmentPoint.generated.h"

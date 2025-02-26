@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Engine/Engine.h"
-#include "Engine/GameViewportClient.h"
 #include "World/WeaponModularManager.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
+#include "Kismet/KismetRenderingLibrary.h"
 #include "Data/WeaponData.h"
 #include "HUD/UI/Layouts/MainLayout.h"
 #include "HUD/UI/Layouts/WeaponLayout.h"
 #include "HUD/UI/Slots/InventoryItemSlotWidget.h"
-#include "Kismet/KismetRenderingLibrary.h"
 #include "AInventorySceneRenderer.h"
 #include "World/Weapon.h"
 
@@ -72,8 +72,10 @@ void AWeaponModularManager::SpawnInventorySceneRenderers(FWeaponData* WData)
 	IndexSpawn++;
 
 	FVector2D ViewportSize = FVector2D( 1, 1 );
-	ViewportSize.X = GSystemResolution.ResX;
-	ViewportSize.Y = GSystemResolution.ResY;
+	if (GEngine && GEngine->GameViewport)
+	{
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
 
 	UTextureRenderTarget2D* RenderTarget = UKismetRenderingLibrary::CreateRenderTarget2D(this, ViewportSize.X, ViewportSize.Y, RTF_RGBA16f);
 	if (!RenderTarget)

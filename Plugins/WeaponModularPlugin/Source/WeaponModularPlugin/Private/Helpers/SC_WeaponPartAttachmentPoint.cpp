@@ -2,7 +2,8 @@
 
 
 #include "Helpers/SC_WeaponPartAttachmentPoint.h"
-
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Data/WeaponPartData.h"
 
 

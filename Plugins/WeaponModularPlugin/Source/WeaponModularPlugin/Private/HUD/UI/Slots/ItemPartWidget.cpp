@@ -3,6 +3,8 @@
 
 #include "HUD/UI/Slots/ItemPartWidget.h"
 
+#include "Engine/Texture2D.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Components/Button.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"

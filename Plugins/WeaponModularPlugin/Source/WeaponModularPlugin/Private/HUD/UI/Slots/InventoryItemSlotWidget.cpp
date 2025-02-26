@@ -3,6 +3,10 @@
 
 #include "HUD/UI/Slots/InventoryItemSlotWidget.h"
 
+#include "Layout/WidgetPath.h"
+#include "CoreMinimal.h"
+#include "Widgets/SWidget.h"
+#include "Layout/ArrangedWidget.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanel.h"
