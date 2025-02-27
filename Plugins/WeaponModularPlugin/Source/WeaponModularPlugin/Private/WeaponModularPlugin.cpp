@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+//  Nublin Studio 2025 All Rights Reserved.
 
 #include "WeaponModularPlugin.h"
 

@@ -2,6 +2,7 @@
 
 using UnrealBuildTool;
 
+[SupportedPlatforms("Win64", "Linux", "Mac")]
 public class WeaponModularPlugin : ModuleRules
 {
 	public WeaponModularPlugin(ReadOnlyTargetRules Target) : base(Target)
@@ -13,7 +14,6 @@ public class WeaponModularPlugin : ModuleRules
 				// ... add public include paths required here ...
 			}
 			);
-				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
@@ -48,5 +48,7 @@ public class WeaponModularPlugin : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+		
+		
 	}
 }
